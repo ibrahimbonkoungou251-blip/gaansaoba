@@ -7,14 +7,20 @@ from models import db, User, Hotel, Room, Booking
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'gaansaoba_secret_2026'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gaansaoba.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'gaansaoba_secret_2026')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///gaansaoba.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+# Initialize DB on startup (required for Render/production)
+with app.app_context():
+    db.create_all()
+    seed_data() if not app.config.get('SEEDED') else None
+    os.makedirs(os.path.join('static', 'qrcodes'), exist_ok=True)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -25,7 +31,11 @@ def load_user(user_id):
 
 # Initialize Database and Seed Data
 def seed_data():
-    if Hotel.query.first():
+    try:
+        if Hotel.query.first():
+            return
+    except Exception:
+        db.create_all()
         return
     
     # Adding sample hotels
