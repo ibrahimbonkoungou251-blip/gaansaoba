@@ -16,11 +16,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# Initialize DB on startup (required for Render/production)
-with app.app_context():
-    db.create_all()
-    seed_data() if not app.config.get('SEEDED') else None
-    os.makedirs(os.path.join('static', 'qrcodes'), exist_ok=True)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -37,21 +33,21 @@ def seed_data():
     except Exception:
         db.create_all()
         return
-    
+
     # Adding sample hotels
-    h1 = Hotel(name="Hôtel Faso Luxe", type="hotel", stars=5, city="Ouagadougou", 
+    h1 = Hotel(name="Hôtel Faso Luxe", type="hotel", stars=5, city="Ouagadougou",
                address="Centre Ville", whatsapp="+226 70 00 00 00", phone="+226 25 30 00 00",
-               email="contact@fasoluxe.com", price_base=45000, 
+               email="contact@fasoluxe.com", price_base=45000,
                image_url="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa",
                amenities="WiFi,Piscine,Climatisation,Restaurant,Parking")
-    
-    h2 = Hotel(name="Auberge Wend Panga", type="auberge", stars=3, city="Bobo-Dioulasso", 
+
+    h2 = Hotel(name="Auberge Wend Panga", type="auberge", stars=3, city="Bobo-Dioulasso",
                address="Quartier Latin", whatsapp="+226 65 11 11 11", phone="+226 20 97 00 00",
                email="auberge@wendpanga.com", price_base=12000,
                image_url="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
                amenities="WiFi,Climatisation,Parking")
-    
-    h3 = Hotel(name="Résidence Faso Meublée", type="residence", city="Ouagadougou", 
+
+    h3 = Hotel(name="Résidence Faso Meublée", type="residence", city="Ouagadougou",
                address="Ouaga 2000", whatsapp="+226 78 00 00 00", email="info@fasoresidence.bf",
                price_base=25000, image_url="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2",
                amenities="WiFi,Cuisine,Climatisation,Parking")
@@ -62,13 +58,13 @@ def seed_data():
     # Create default users
     admin = User(username='admin', role='admin')
     admin.set_password('admin123')
-    
+
     hotelier = User(username='hotelier', role='hotelier', hotel_id=h1.id)
     hotelier.set_password('hotelier123')
-    
+
     client = User(username='client', role='client')
     client.set_password('client123')
-    
+
     db.session.add_all([admin, hotelier, client])
     db.session.commit()
 
@@ -81,13 +77,13 @@ def seed_data():
 
     # Add a sample booking for the client
     os.makedirs('static/qrcodes', exist_ok=True)
-    sample_booking = Booking(hotel_id=h1.id, room_id=1, 
+    sample_booking = Booking(hotel_id=h1.id, room_id=1,
                              guest_name='client', guest_phone='+226 70 12 34 56',
                              check_in=datetime(2026, 6, 1), check_out=datetime(2026, 6, 5),
                              total_price=h1.price_base * 4, status='confirmed')
     db.session.add(sample_booking)
     db.session.commit()
-    
+
     # Generate QR Code for sample
     qr_data = f"GAANSAOBA-SEED-{sample_booking.id}-client"
     qr = qrcode.make(qr_data)
@@ -95,6 +91,12 @@ def seed_data():
     qr.save(qr_path)
     sample_booking.qr_code_path = qr_path
     db.session.commit()
+
+# Initialize DB on startup (required for Render/production)
+with app.app_context():
+    db.create_all()
+    seed_data()
+    os.makedirs(os.path.join('static', 'qrcodes'), exist_ok=True)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
