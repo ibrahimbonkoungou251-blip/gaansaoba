@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription - GAANSAOBA{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-3xl shadow-xl border border-gray-100">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 font-serif">
+                Rejoignez GAANSAOBA
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Ou <a href="{{ url_for('login') }}" class="font-medium text-faso hover:text-green-700">connectez-vous à votre compte</a>
+            </p>
+        </div>
+
+        <form class="mt-8 space-y-6" action="{{ url_for('register') }}" method="POST">
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div class="mb-4">
+                    <label for="username" class="sr-only">Nom d'utilisateur</label>
+                    <input id="username" name="username" type="text" required class="appearance-none rounded-t-xl relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-faso focus:border-faso focus:z-10 sm:text-sm" placeholder="Nom d'utilisateur">
+                </div>
+                <div class="mb-4">
+                    <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Type de compte</label>
+                    <select id="role" name="role" class="block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-faso focus:border-faso sm:text-sm">
+                        <option value="client">Client (Voyageur)</option>
+                        <option value="hotelier">Hôtelier (Établissement)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="password" class="sr-only">Mot de passe</label>
+                    <input id="password" name="password" type="password" required class="appearance-none rounded-b-xl relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-faso focus:border-faso focus:z-10 sm:text-sm" placeholder="Mot de passe">
+                </div>
+            </div>
+
+            <p class="text-xs text-gray-500">
+                En vous inscrivant, vous acceptez nos <a href="{{ url_for('terms') }}" class="text-faso underline">Conditions Générales</a> et notre <a href="{{ url_for('privacy') }}" class="text-faso underline">Politique de Confidentialité</a>.
+            </p>
+
+            <div>
+                <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-faso hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-faso transition-all duration-300 shadow-lg">
+                    Créer mon compte
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

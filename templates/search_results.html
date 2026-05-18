@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 py-12">
+    <div class="mb-12">
+        <h1 class="text-3xl font-bold font-serif">Résultats pour "{{ city or 'Tout le Burkina' }}"</h1>
+        <p class="text-gray-500">{{ hotels | length }} établissements trouvés.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Filters Sidebar -->
+        <div class="md:col-span-1">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 sticky top-24">
+                <h3 class="font-bold mb-6">Filtrer par</h3>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Catégorie</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> 5 Étoiles</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> 4 Étoiles</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> Auberges</label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Services</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> Piscine</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> WiFi</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> Parking</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Grid -->
+        <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8">
+            {% for hotel in hotels %}
+            <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition group">
+                <div class="h-48 overflow-hidden relative">
+                    <img src="{{ hotel.image_url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    {% if loop.first %}
+                    <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider animate-pulse">
+                        🔥 Offre Spéciale
+                    </div>
+                    {% endif %}
+                    <div class="absolute bottom-4 right-4 bg-white px-3 py-1 rounded-lg text-sm font-bold shadow">
+                        {{ hotel.price_base | int }} F / nuit
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold mb-1">{{ hotel.name }}</h3>
+                    <p class="text-gray-400 text-xs mb-4">📍 {{ hotel.city }}, {{ hotel.address }}</p>
+                    <div class="flex text-gold text-xs mb-4">
+                        {% for _ in range(hotel.stars) %}⭐{% endfor %}
+                    </div>
+                    <a href="{{ url_for('hotel_detail', hotel_id=hotel.id) }}" class="block text-center bg-faso text-white py-2 rounded-lg font-bold hover:bg-green-700 transition">Voir les chambres</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Espace Hôtelier - {{ hotel.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold font-serif text-gray-900">{{ hotel.name }}</h1>
+            <p class="text-gray-500">📍 {{ hotel.city }}, {{ hotel.address }}</p>
+        </div>
+        <div class="flex gap-4">
+            <a href="{{ url_for('wip_feature') }}" class="bg-faso text-white px-6 py-2 rounded-xl font-bold hover:bg-green-700 transition inline-block text-center">Ajouter une chambre</a>
+            <a href="{{ url_for('wip_feature') }}" class="bg-white border border-gray-200 text-gray-700 px-6 py-2 rounded-xl font-bold hover:bg-gray-50 transition inline-block text-center">Modifier l'hôtel</a>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500 mb-1">Réservations Totales</p>
+            <h3 class="text-3xl font-bold text-faso">{{ bookings|length }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500 mb-1">Revenu Estimé</p>
+            <h3 class="text-3xl font-bold text-gold">{{ bookings|sum(attribute='total_price')|int }} F</h3>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500 mb-1">Chambres Totales</p>
+            <h3 class="text-3xl font-bold text-blue-600">{{ rooms|length }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <p class="text-sm text-gray-500 mb-1">Note Moyenne</p>
+            <h3 class="text-3xl font-bold text-orange-500">4.8 ⭐</h3>
+        </div>
+    </div>
+
+    <!-- Gestion des Chambres -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-12" id="rooms-section">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="text-xl font-bold">Gestion des Chambres</h2>
+        </div>
+        <div class="p-6">
+            <form method="POST" action="{{ url_for('hotelier_add_room') }}" class="flex gap-4 mb-6 items-end bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Type de chambre (Standard, Luxe...)</label>
+                    <input type="text" name="type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="flex-1">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Prix par nuit (FCFA)</label>
+                    <input type="number" name="price" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <button type="submit" class="bg-faso text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700 transition h-[42px]">Ajouter</button>
+            </form>
+
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-gray-500 text-sm uppercase">
+                        <th class="py-3 font-bold">Type</th>
+                        <th class="py-3 font-bold">Prix</th>
+                        <th class="py-3 font-bold">Statut</th>
+                        <th class="py-3 font-bold">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for room in rooms %}
+                    <tr>
+                        <td class="py-3 font-bold">{{ room.type }}</td>
+                        <td class="py-3 text-gold font-bold">{{ room.price|int }} F</td>
+                        <td class="py-3">
+                            {% if room.available %}
+                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Disponible</span>
+                            {% else %}
+                            <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">Indisponible</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3">
+                            <form method="POST" action="{{ url_for('hotelier_toggle_room', room_id=room.id) }}">
+                                <button type="submit" class="text-sm font-bold text-gray-500 hover:text-dark underline">
+                                    {% if room.available %}Désactiver{% else %}Activer{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="py-4 text-center text-gray-500">Aucune chambre ajoutée.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="text-xl font-bold">Dernières Réservations</h2>
+            <select class="text-sm border-none bg-gray-50 rounded-lg px-3 py-1">
+                <option>Toutes</option>
+                <option>En attente</option>
+                <option>Confirmées</option>
+            </select>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-500 text-sm uppercase">
+                        <th class="px-6 py-4 font-bold">Client</th>
+                        <th class="px-6 py-4 font-bold">Check-in</th>
+                        <th class="px-6 py-4 font-bold">Check-out</th>
+                        <th class="px-6 py-4 font-bold">Total</th>
+                        <th class="px-6 py-4 font-bold">Statut</th>
+                        <th class="px-6 py-4 font-bold">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for booking in bookings %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-gray-900">{{ booking.guest_name }}</div>
+                            <div class="text-xs text-gray-500">{{ booking.guest_phone }}</div>
+                        </td>
+                        <td class="px-6 py-4 text-sm">{{ booking.check_in.strftime('%d %b %Y') }}</td>
+                        <td class="px-6 py-4 text-sm">{{ booking.check_out.strftime('%d %b %Y') }}</td>
+                        <td class="px-6 py-4 font-bold text-faso">{{ booking.total_price|int }} F</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold 
+                                {% if booking.status == 'confirmed' %}bg-green-100 text-green-700
+                                {% elif booking.status == 'pending' %}bg-orange-100 text-orange-700
+                                {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                {{ booking.status|capitalize }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if booking.status == 'pending' %}
+                            <form method="POST" action="{{ url_for('hotelier_confirm_booking', booking_id=booking.id) }}" class="inline">
+                                <button type="submit" class="text-faso hover:underline font-bold text-sm">Confirmer</button>
+                            </form>
+                            {% else %}
+                            <span class="text-gray-400 text-sm italic">Aucune action</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-gray-500">Aucune réservation pour le moment.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

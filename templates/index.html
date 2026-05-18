@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative h-[80vh] flex items-center justify-center text-white">
+    <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945" class="w-full h-full object-cover brightness-50" alt="Burkina Faso Hotel">
+    </div>
+    <div class="relative z-10 text-center px-4">
+        <h1 class="text-5xl md:text-7xl font-bold font-serif mb-6">Trouvez votre chambre <br><span class="text-gold">idéale au Burkina</span></h1>
+        <p class="text-xl mb-10 max-w-2xl mx-auto">Comparez les meilleurs hôtels, auberges et résidences. Réservez en un clic.</p>
+        
+        <!-- Search Box -->
+        <div class="bg-white p-4 rounded-xl shadow-2xl max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-4 text-gray-800">
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Ville</label>
+                <select id="city" class="w-full border-none focus:ring-0 font-semibold">
+                    <option value="Ouagadougou">Ouagadougou</option>
+                    <option value="Bobo-Dioulasso">Bobo-Dioulasso</option>
+                    <option value="Koudougou">Koudougou</option>
+                    <option value="Banfora">Banfora</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Type</label>
+                <select id="type" class="w-full border-none focus:ring-0 font-semibold">
+                    <option value="hotel">Hôtel</option>
+                    <option value="auberge">Auberge</option>
+                    <option value="residence">Résidence</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Personnes</label>
+                <input type="number" id="guests" min="1" value="1" class="w-full border-none focus:ring-0 font-semibold">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Budget Max</label>
+                <input type="number" id="budget" placeholder="FCFA" class="w-full border-none focus:ring-0 font-semibold">
+            </div>
+            <button onclick="performSearch()" class="bg-faso text-white font-bold rounded-lg h-full py-3 hover:bg-green-700 transition">🔍 Rechercher</button>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Categories -->
+<section class="max-w-7xl mx-auto px-4 py-20">
+    <div class="flex justify-between items-end mb-12">
+        <div>
+            <h2 class="text-3xl font-bold font-serif">Hébergements populaires</h2>
+            <p class="text-gray-500">Les établissements les plus réservés ce mois-ci.</p>
+        </div>
+        <a href="{{ url_for('search') }}" class="text-faso font-bold border-b-2 border-faso">Voir tout →</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {% for hotel in hotels %}
+        <div class="bg-white rounded-2xl overflow-hidden shadow-lg group hover:shadow-2xl transition duration-300">
+            <div class="relative h-64 overflow-hidden">
+                <img src="{{ hotel.image_url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="{{ hotel.name }}">
+                <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-faso">
+                    {{ hotel.type | capitalize }}
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="flex text-gold mb-2">
+                    {% for _ in range(hotel.stars) %}⭐{% endfor %}
+                </div>
+                <h3 class="text-xl font-bold mb-2">{{ hotel.name }}</h3>
+                <p class="text-gray-500 text-sm mb-4">📍 {{ hotel.city }}, {{ hotel.address }}</p>
+                <div class="flex items-center justify-between border-t pt-4">
+                    <span class="text-2xl font-black text-faso">{{ hotel.price_base | int }} F <span class="text-xs font-normal text-gray-400">/ nuit</span></span>
+                    <a href="{{ url_for('hotel_detail', hotel_id=hotel.id) }}" class="bg-dark text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-gold hover:text-dark transition">Détails</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Mobile Money Info -->
+<section class="bg-gray-100 py-20">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-4">Paiement Mobile Money & QR Code</h2>
+        <p class="text-gray-600 mb-12">Payez votre avance en toute sécurité avec vos services locaux.</p>
+        <div class="flex flex-wrap justify-center gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-md w-40 flex flex-col items-center">
+                <div class="w-16 h-16 bg-orange-500 rounded-full mb-4"></div>
+                <span class="font-bold">Orange Money</span>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md w-40 flex flex-col items-center">
+                <div class="w-16 h-16 bg-blue-600 rounded-full mb-4"></div>
+                <span class="font-bold">Moov Money</span>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md w-40 flex flex-col items-center">
+                <div class="w-16 h-16 bg-red-600 rounded-full mb-4"></div>
+                <span class="font-bold">Telecel Money</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function performSearch() {
+    const city = document.getElementById('city').value;
+    const type = document.getElementById('type').value;
+    const budget = document.getElementById('budget').value;
+    const guests = document.getElementById('guests').value;
+    window.location.href = `/search?city=${city}&type=${type}&budget=${budget}&guests=${guests}`;
+}
+</script>
+{% endblock %}

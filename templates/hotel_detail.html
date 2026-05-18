@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <!-- Hotel Info -->
+        <div>
+            <div class="relative h-96 rounded-3xl overflow-hidden mb-8 shadow-2xl">
+                <img src="{{ hotel.image_url }}" class="w-full h-full object-cover" alt="{{ hotel.name }}">
+                <div class="absolute top-6 left-6 bg-gold text-dark px-4 py-2 rounded-full font-bold shadow-lg">
+                    {{ hotel.type | capitalize }}
+                </div>
+            </div>
+            <h1 class="text-4xl font-bold font-serif mb-4">{{ hotel.name }}</h1>
+            <div class="flex text-gold text-xl mb-4">
+                {% for _ in range(hotel.stars) %}⭐{% endfor %}
+            </div>
+            <p class="text-gray-600 mb-6 text-lg leading-relaxed">{{ hotel.description or "Découvrez le confort et l'élégance au cœur du Burkina Faso. Cet établissement vous accueille dans un cadre chaleureux et professionnel." }}</p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <span class="block text-gray-400 text-xs font-bold uppercase mb-1">Localisation</span>
+                    <p class="font-bold">📍 {{ hotel.city }}, {{ hotel.address }}</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <span class="block text-gray-400 text-xs font-bold uppercase mb-1">WhatsApp</span>
+                    <p class="font-bold text-green-600">📗 {{ hotel.whatsapp }}</p>
+                </div>
+            </div>
+
+            <h3 class="font-bold text-xl mb-4">Services inclus</h3>
+            <div class="flex flex-wrap gap-3">
+                {% for amenity in hotel.amenities.split(',') %}
+                <span class="bg-faso/10 text-faso px-4 py-2 rounded-full font-medium text-sm">✓ {{ amenity }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="bg-white p-8 rounded-3xl shadow-2xl border border-gray-100 h-fit sticky top-24">
+            <h3 class="text-2xl font-bold mb-6">Réserver une chambre</h3>
+            <form action="{{ url_for('book') }}" method="POST">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Type de chambre</label>
+                        <select name="room_type" class="w-full bg-gray-50 border-gray-200 rounded-xl p-3 focus:ring-faso">
+                            {% for room in hotel.rooms %}
+                            <option value="{{ room.id }}">{{ room.type }} - {{ room.price | int }} F / nuit</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Arrivée</label>
+                            <input type="date" name="check_in" class="w-full bg-gray-50 border-gray-200 rounded-xl p-3" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Départ</label>
+                            <input type="date" name="check_out" class="w-full bg-gray-50 border-gray-200 rounded-xl p-3" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Nom Complet / Nom d'utilisateur</label>
+                        <input type="text" name="name" placeholder="Votre nom" value="{{ current_user.username if current_user.is_authenticated else '' }}" class="w-full bg-gray-50 border-gray-200 rounded-xl p-3" required {% if current_user.is_authenticated %}readonly{% endif %}>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Téléphone</label>
+                        <input type="tel" name="phone" placeholder="+226" class="w-full bg-gray-50 border-gray-200 rounded-xl p-3" required>
+                    </div>
+                    
+                    <div class="border-t pt-4 mt-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-500">Total</span>
+                            <span id="total-price" class="text-2xl font-bold text-faso">0 F</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gold/10 p-4 rounded-xl mt-4 text-center">
+                        <p class="text-xs text-gray-700 mb-4 italic">Simulation de paiement Mobile Money sécurisé après validation.</p>
+                        <button type="submit" class="w-full bg-faso text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 shadow-lg transition">
+                            Confirmer la Réservation
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const roomSelect = document.querySelector('select[name="room_type"]');
+const checkInInput = document.querySelector('input[name="check_in"]');
+const checkOutInput = document.querySelector('input[name="check_out"]');
+const totalDisplay = document.getElementById('total-price');
+
+function calculateTotal() {
+    const checkIn = new Date(checkInInput.value);
+    const checkOut = new Date(checkOutInput.value);
+    
+    if (checkIn && checkOut && checkOut > checkIn) {
+        const diffTime = Math.abs(checkOut - checkIn);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        // Extract price from option text (format: "Standard - 45000 F / nuit")
+        const selectedOption = roomSelect.options[roomSelect.selectedIndex].text;
+        const priceMatch = selectedOption.match(/(\d+)\s*F/);
+        const pricePerNight = priceMatch ? parseInt(priceMatch[1]) : 0;
+        
+        const total = diffDays * pricePerNight;
+        totalDisplay.innerText = total.toLocaleString() + ' F';
+    } else {
+        totalDisplay.innerText = '0 F';
+    }
+}
+
+[roomSelect, checkInInput, checkOutInput].forEach(el => {
+    el.addEventListener('change', calculateTotal);
+});
+</script>
+{% endblock %}

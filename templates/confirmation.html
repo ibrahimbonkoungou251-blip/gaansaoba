@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-20 text-center">
+    <div class="bg-white p-12 rounded-3xl shadow-2xl border border-gray-100">
+        <div class="w-20 h-20 bg-green-100 text-faso rounded-full flex items-center justify-center mx-auto mb-8 text-4xl">
+            ✓
+        </div>
+        <h1 class="text-3xl font-bold mb-4">Réservation Confirmée !</h1>
+        <p class="text-gray-600 mb-8 text-lg">Merci, {{ booking.guest_name }}. Votre séjour à <span class="font-bold">{{ booking.hotel.name }}</span> est enregistré.</p>
+        
+        <div class="bg-gray-50 p-6 rounded-2xl mb-8 grid grid-cols-2 gap-4 text-left">
+            <div>
+                <span class="text-xs text-gray-400 font-bold uppercase">Dates</span>
+                <p class="font-bold">{{ booking.check_in.strftime('%d/%m/%Y') }} - {{ booking.check_out.strftime('%d/%m/%Y') }}</p>
+            </div>
+            <div>
+                <span class="text-xs text-gray-400 font-bold uppercase">Montant Total</span>
+                <p class="font-bold">{{ booking.total_price | int }} F CFA</p>
+            </div>
+            <div class="col-span-2 border-t pt-4">
+                <span class="text-xs text-gray-400 font-bold uppercase">Référence</span>
+                <p class="font-mono font-bold text-faso">GAAN-{{ booking.id }}-{{ booking.guest_phone[-4:] }}</p>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <p class="font-bold mb-4">Votre QR Code de confirmation</p>
+            <img src="/{{ booking.qr_code_path }}" class="mx-auto w-48 h-48 border-4 border-white shadow-lg rounded-xl" alt="QR Code">
+            <p class="text-xs text-gray-400 mt-4">Présentez ce code à la réception de l'établissement.</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-4">
+            <button onclick="window.print()" class="flex-1 bg-dark text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition">🖨️ Imprimer Reçu</button>
+            <a href="{{ url_for('index') }}" class="flex-1 border-2 border-faso text-faso py-3 rounded-xl font-bold hover:bg-faso hover:text-white transition">Retour à l'accueil</a>
+        </div>
+    </div>
+    
+    <p class="mt-8 text-gray-500 text-sm">Un SMS et un Email de confirmation vous ont été envoyés. 📲📧</p>
+</div>
+{% endblock %}
