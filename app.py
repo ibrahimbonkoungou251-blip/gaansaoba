@@ -219,18 +219,27 @@ def search():
 
 @app.route('/forgot-password')
 def forgot_password():
-    flash('Cette fonctionnalité de réinitialisation de mot de passe est en cours de développement. Veuillez contacter l\'administrateur.', 'error')
+    flash('La réinitialisation par email sera disponible prochainement. Contactez-nous via WhatsApp pour une assistance immédiate.', 'success')
     return redirect(url_for('login'))
 
 @app.route('/terms')
 def terms():
-    flash('Nos conditions générales d\'utilisation seront bientôt disponibles en ligne.', 'success')
+    flash('Nos conditions générales d\'utilisation seront publiées prochainement sur gaansaoba.bf', 'success')
     return redirect(url_for('index'))
 
 @app.route('/privacy')
 def privacy():
     flash('Notre politique de confidentialité sera bientôt disponible en ligne.', 'success')
     return redirect(url_for('index'))
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        name = request.form.get('name', '')
+        email = request.form.get('email', '')
+        flash(f'Merci {name} ! Votre message a été reçu. Nous vous répondrons à {email} dans les 24h. 🙏', 'success')
+        return redirect(url_for('contact'))
+    return render_template('contact.html')
 
 @app.route('/wip')
 @login_required

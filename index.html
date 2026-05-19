@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GAANSAOBA - Votre séjour au Burkina en un clic</title>
+  <meta name="description" content="Gaansaoba est la première plateforme de réservation d'hôtels et auberges au Burkina Faso. Recherchez, comparez et réservez en ligne avec paiement Mobile Money." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="loader-content">
+      <div class="loader-logo">GAANSAOBA</div>
+      <div class="loader-bar"><div class="loader-fill"></div></div>
+      <p class="loader-tagline">Votre séjour au Burkina en un clic...</p>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🏨</span>
+        <span class="logo-text">GAANSAOBA</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav-link active">Accueil</a>
+        <a href="hotels.html" class="nav-link">Hôtels</a>
+        <a href="auberges.html" class="nav-link">Auberges</a>
+        <a href="reservations.html" class="nav-link">Réservations</a>
+        <a href="promotions.html" class="nav-link">Promotions</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <a href="connexion.html" class="btn-outline" id="loginBtn">Connexion</a>
+        <a href="hotels.html" class="btn-primary" id="reserveBtn">Réserver</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="hero">
+    <div class="hero-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-particles" id="particles"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">🇧🇫 Plateforme N°1 au Burkina Faso</div>
+      <h1 class="hero-title">
+        Trouvez l'hébergement <br/>
+        <span class="gradient-text">parfait au Burkina</span>
+      </h1>
+      <p class="hero-subtitle">Comparez des centaines d'hôtels, auberges et résidences. Réservez en ligne, payez via Mobile Money.</p>
+
+      <!-- SEARCH BOX -->
+      <div class="search-box" id="searchBox">
+        <div class="search-tabs">
+          <button class="search-tab active" data-tab="hotels">🏨 Hôtels</button>
+          <button class="search-tab" data-tab="auberges">🏠 Auberges</button>
+          <button class="search-tab" data-tab="residences">🏡 Résidences</button>
+        </div>
+        <div class="search-form">
+          <div class="search-field">
+            <label>📍 Ville</label>
+            <select id="searchCity">
+              <option value="">Toutes les villes</option>
+              <option value="ouaga">Ouagadougou</option>
+              <option value="bobo">Bobo-Dioulasso</option>
+              <option value="ouahi">Ouahigouya</option>
+              <option value="koudou">Koudougou</option>
+              <option value="banfora">Banfora</option>
+              <option value="dedougou">Dédougou</option>
+              <option value="fada">Fada N'Gourma</option>
+            </select>
+          </div>
+          <div class="search-field">
+            <label>💰 Budget / nuit</label>
+            <select id="searchBudget">
+              <option value="">Tous les budgets</option>
+              <option value="5000">Jusqu'à 5 000 F</option>
+              <option value="10000">Jusqu'à 10 000 F</option>
+              <option value="25000">Jusqu'à 25 000 F</option>
+              <option value="50000">Jusqu'à 50 000 F</option>
+              <option value="100000">Plus de 50 000 F</option>
+            </select>
+          </div>
+          <div class="search-field">
+            <label>📅 Arrivée</label>
+            <input type="date" id="searchCheckin" />
+          </div>
+          <div class="search-field">
+            <label>📅 Départ</label>
+            <input type="date" id="searchCheckout" />
+          </div>
+          <div class="search-field">
+            <label>👥 Personnes</label>
+            <select id="searchGuests">
+              <option value="1">1 personne</option>
+              <option value="2" selected>2 personnes</option>
+              <option value="3">3 personnes</option>
+              <option value="4">4+ personnes</option>
+            </select>
+          </div>
+          <button class="search-btn" id="searchBtn" onclick="window.location.href='hotels.html'">
+            🔍 Rechercher
+          </button>
+        </div>
+      </div>
+
+      <!-- HERO STATS -->
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number" data-count="250">0</span><span>+</span>
+          <span class="stat-label">Hôtels & Auberges</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-count="12">0</span>
+          <span class="stat-label">Villes couvertes</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-count="5000">0</span><span>+</span>
+          <span class="stat-label">Réservations</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-number" data-count="98">0</span><span>%</span>
+          <span class="stat-label">Clients satisfaits</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES SECTION -->
+  <section class="categories-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Explorer</span>
+        <h2 class="section-title">Choisissez votre type d'hébergement</h2>
+        <p class="section-sub">Des options pour tous les budgets et tous les goûts</p>
+      </div>
+      <div class="categories-grid">
+        <a href="hotels.html" class="category-card" id="catHotels">
+          <div class="category-icon">🏨</div>
+          <div class="category-bg" style="background: linear-gradient(135deg, #1a472a, #2d6a4f)"></div>
+          <div class="category-content">
+            <h3>Hôtels</h3>
+            <p>De 1 à 5 étoiles avec tous les services</p>
+            <span class="category-count">120+ établissements</span>
+          </div>
+          <div class="category-arrow">→</div>
+        </a>
+        <a href="auberges.html" class="category-card" id="catAuberges">
+          <div class="category-icon">🏠</div>
+          <div class="category-bg" style="background: linear-gradient(135deg, #7b4f00, #c78b00)"></div>
+          <div class="category-content">
+            <h3>Auberges</h3>
+            <p>Confort et convivialité à petit prix</p>
+            <span class="category-count">85+ établissements</span>
+          </div>
+          <div class="category-arrow">→</div>
+        </a>
+        <a href="residences.html" class="category-card" id="catResidences">
+          <div class="category-icon">🏡</div>
+          <div class="category-bg" style="background: linear-gradient(135deg, #1a1a5e, #4a4a9c)"></div>
+          <div class="category-content">
+            <h3>Résidences</h3>
+            <p>Appartements meublés pour longs séjours</p>
+            <span class="category-count">45+ établissements</span>
+          </div>
+          <div class="category-arrow">→</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED HOTELS -->
+  <section class="featured-section" id="featuredHotels">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">⭐ Top Sélection</span>
+        <h2 class="section-title">Hôtels les plus populaires</h2>
+        <p class="section-sub">Les hébergements préférés de nos clients au Burkina Faso</p>
+      </div>
+      <div class="hotels-grid" id="hotelsGrid">
+        <!-- Cards injected by JS -->
+      </div>
+      <div class="section-cta">
+        <a href="hotels.html" class="btn-primary-lg">Voir tous les hôtels →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Simple & Rapide</span>
+        <h2 class="section-title">Comment ça marche ?</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <div class="step-icon">🔍</div>
+          <h3>Recherchez</h3>
+          <p>Entrez votre ville, dates et budget. Notre moteur de recherche trouve les meilleures options.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <div class="step-icon">⚖️</div>
+          <h3>Comparez</h3>
+          <p>Consultez les photos, services, avis clients et comparez les prix en un coup d'œil.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <div class="step-icon">📝</div>
+          <h3>Réservez</h3>
+          <p>Choisissez votre chambre, sélectionnez vos dates et remplissez le formulaire de réservation.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-card">
+          <div class="step-number">04</div>
+          <div class="step-icon">📱</div>
+          <h3>Payez</h3>
+          <p>Payez une avance via Orange Money, Moov Money, Telecel Money ou QR Code. Recevez votre confirmation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAYMENT SECTION -->
+  <section class="payment-section">
+    <div class="container">
+      <div class="payment-inner">
+        <div class="payment-text">
+          <span class="section-badge">💳 Paiement sécurisé</span>
+          <h2>Payez facilement avec Mobile Money</h2>
+          <p>Réglez votre avance de réservation via les solutions de paiement mobile les plus utilisées au Burkina Faso. Rapide, sécurisé, et accessible partout.</p>
+          <ul class="payment-features">
+            <li>✅ Confirmation instantanée par SMS</li>
+            <li>✅ QR Code de réservation</li>
+            <li>✅ Avance 100% remboursable</li>
+            <li>✅ Reçu électronique par WhatsApp</li>
+          </ul>
+        </div>
+        <div class="payment-methods">
+          <div class="payment-card" id="payOrange">
+            <div class="payment-logo orange">🟠</div>
+            <span>Orange Money</span>
+          </div>
+          <div class="payment-card" id="payMoov">
+            <div class="payment-logo blue">🔵</div>
+            <span>Moov Money</span>
+          </div>
+          <div class="payment-card" id="payTelecel">
+            <div class="payment-logo red">🔴</div>
+            <span>Telecel Money</span>
+          </div>
+          <div class="payment-card" id="payCard">
+            <div class="payment-logo gold">💳</div>
+            <span>Carte bancaire</span>
+          </div>
+          <div class="payment-card" id="payQR">
+            <div class="payment-logo dark">📲</div>
+            <span>QR Code</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMOTIONS BANNER -->
+  <section class="promo-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">🔥 Offres Limitées</span>
+        <h2 class="section-title">Promotions du moment</h2>
+      </div>
+      <div class="promos-grid" id="promosGrid">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">💬 Avis clients</span>
+        <h2 class="section-title">Ce que disent nos clients</h2>
+      </div>
+      <div class="testimonials-slider" id="testimonialsSlider">
+        <div class="testimonials-track" id="testimonialsTrack">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+      <div class="testimonials-dots" id="testimonialsDots"></div>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <div class="cta-particles"></div>
+      <h2>"Dormez partout au Burkina,<br/>réservez en toute confiance."</h2>
+      <p>Rejoignez des milliers de voyageurs qui font confiance à Gaansaoba pour leurs séjours au Burkina Faso.</p>
+      <div class="cta-buttons">
+        <a href="hotels.html" class="btn-primary-lg" id="ctaReserve">🏨 Trouver un hôtel</a>
+        <a href="contact.html" class="btn-outline-lg" id="ctaContact">Inscrire mon établissement</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">🏨 GAANSAOBA</div>
+          <p>La première plateforme de réservation d'hébergements au Burkina Faso. Votre séjour au Burkina en un clic.</p>
+          <div class="footer-social">
+            <a href="#" id="fbLink" aria-label="Facebook" class="social-link">📘</a>
+            <a href="#" id="waLink" aria-label="WhatsApp" class="social-link">📗</a>
+            <a href="#" id="twLink" aria-label="Twitter" class="social-link">📘</a>
+            <a href="#" id="inLink" aria-label="Instagram" class="social-link">📷</a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="hotels.html">Hôtels</a></li>
+            <li><a href="auberges.html">Auberges</a></li>
+            <li><a href="promotions.html">Promotions</a></li>
+            <li><a href="reservations.html">Mes Réservations</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="#">Réservation en ligne</a></li>
+            <li><a href="#">Paiement Mobile Money</a></li>
+            <li><a href="#">Tableau de bord Hôtelier</a></li>
+            <li><a href="#">Programme fidélité</a></li>
+            <li><a href="#">Aide & FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Contact</h4>
+          <ul>
+            <li>📍 Ouagadougou, Burkina Faso</li>
+            <li>📞 +226 00 00 00 00</li>
+            <li>📧 contact@gaansaoba.bf</li>
+            <li>🌐 www.gaansaoba.bf</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 GAANSAOBA - Tous droits réservés | <a href="#">Politique de confidentialité</a> | <a href="#">CGU</a></p>
+        <div class="footer-flags">🇧🇫 Made in Burkina Faso</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL DE RÉSERVATION RAPIDE -->
+  <div class="modal-overlay" id="reservationModal">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">✕</button>
+      <h2>🏨 Réservation Rapide</h2>
+      <div id="modalHotelName" class="modal-hotel-name"></div>
+      <form id="reservationForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom & Nom</label>
+            <input type="text" id="guestName" placeholder="Ex: Moussa Kaboré" required />
+          </div>
+          <div class="form-group">
+            <label>Téléphone / WhatsApp</label>
+            <input type="tel" id="guestPhone" placeholder="+226 70 00 00 00" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date d'arrivée</label>
+            <input type="date" id="checkinDate" required />
+          </div>
+          <div class="form-group">
+            <label>Date de départ</label>
+            <input type="date" id="checkoutDate" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Type de chambre</label>
+            <select id="roomType">
+              <option>Chambre standard</option>
+              <option>Chambre supérieure</option>
+              <option>Suite</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Nombre de personnes</label>
+            <select id="numGuests">
+              <option value="1">1 personne</option>
+              <option value="2">2 personnes</option>
+              <option value="3">3 personnes</option>
+              <option value="4">4+ personnes</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Mode de paiement de l'avance</label>
+          <div class="payment-options">
+            <label class="pay-opt"><input type="radio" name="payment" value="orange" checked /> Orange Money</label>
+            <label class="pay-opt"><input type="radio" name="payment" value="moov" /> Moov Money</label>
+            <label class="pay-opt"><input type="radio" name="payment" value="telecel" /> Telecel Money</label>
+            <label class="pay-opt"><input type="radio" name="payment" value="qr" /> QR Code</label>
+          </div>
+        </div>
+        <div class="price-summary" id="priceSummary">
+          <span>Total estimé:</span>
+          <span id="totalPrice">-- F CFA</span>
+        </div>
+        <button type="submit" class="btn-primary-lg w-full" id="confirmReservation">✅ Confirmer la réservation</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SUCCESS MODAL -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal success-modal">
+      <div class="success-icon">✅</div>
+      <h2>Réservation confirmée !</h2>
+      <p id="successMessage"></p>
+      <div class="qr-placeholder" id="qrCode">
+        <div class="qr-box">📲 QR Code de confirmation</div>
+      </div>
+      <button class="btn-primary-lg" id="closeSuccessModal">Fermer</button>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

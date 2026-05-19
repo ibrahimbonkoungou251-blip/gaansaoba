@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact - GAANSAOBA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .contact-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      padding: 150px 0 100px;
+    }
+    .contact-info h1 {
+      font-family: var(--font-serif);
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+    .contact-form {
+      background: #f9f9f9;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+    .contact-form textarea {
+      width: 100%;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      height: 150px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header scrolled">
+    <div class="header-inner">
+      <a href="index.html" class="logo"><span class="logo-text">GAANSAOBA</span></a>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="hotels.html" class="nav-link">Hôtels</a>
+        <a href="contact.html" class="nav-link active">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="contact-container">
+      <div class="contact-info">
+        <h1>Contactez-nous</h1>
+        <p>Vous êtes un hôtelier ? Vous souhaitez inscrire votre établissement sur Gaansaoba ? Ou vous avez une question sur votre réservation ?</p>
+        <div style="margin-top: 40px;">
+          <p><strong>📍 Adresse:</strong> Ouagadougou, Secteur 15</p>
+          <p><strong>📞 Téléphone:</strong> +226 25 00 00 00</p>
+          <p><strong>📧 Email:</strong> contact@gaansaoba.bf</p>
+          <p><strong>📗 WhatsApp:</strong> +226 70 00 00 00</p>
+        </div>
+      </div>
+      <div class="contact-form">
+        <form>
+          <div class="form-group">
+            <label>Votre Nom</label>
+            <input type="text" placeholder="Ex: Jean Zongo" required />
+          </div>
+          <div class="form-group">
+            <label>Votre Email</label>
+            <input type="email" placeholder="jean@example.com" required />
+          </div>
+          <div class="form-group">
+            <label>Objet</label>
+            <select>
+              <option>Réservation</option>
+              <option>Inscrire un hôtel</option>
+              <option>Partenariat</option>
+              <option>Autre</option>
+            </select>
+          </div>
+          <label>Message</label>
+          <textarea placeholder="Votre message ici..."></textarea>
+          <button type="submit" class="btn-primary" style="width: 100%;">Envoyer le message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

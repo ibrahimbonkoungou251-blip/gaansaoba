@@ -1,101 +1,294 @@
 {% extends "base.html" %}
 
+{% block title %}GAANSAOBA - Votre séjour au Burkina en un clic{% endblock %}
+
 {% block content %}
 <!-- Hero Section -->
-<section class="relative h-[80vh] flex items-center justify-center text-white">
+<section class="relative h-[90vh] flex items-center justify-center text-white">
     <div class="absolute inset-0 z-0">
         <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945" class="w-full h-full object-cover brightness-50" alt="Burkina Faso Hotel">
     </div>
-    <div class="relative z-10 text-center px-4">
-        <h1 class="text-5xl md:text-7xl font-bold font-serif mb-6">Trouvez votre chambre <br><span class="text-gold">idéale au Burkina</span></h1>
-        <p class="text-xl mb-10 max-w-2xl mx-auto">Comparez les meilleurs hôtels, auberges et résidences. Réservez en un clic.</p>
-        
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/60 z-0"></div>
+    <div class="relative z-10 text-center px-4 w-full max-w-6xl mx-auto">
+        <p class="text-gold text-sm font-bold uppercase tracking-widest mb-4">🇧🇫 Plateforme N°1 au Burkina Faso</p>
+        <h1 class="text-4xl md:text-7xl font-bold font-serif mb-6">Trouvez votre chambre <br><span class="text-gold">idéale au Burkina</span></h1>
+        <p class="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-gray-200" data-fr="Comparez les meilleurs hôtels, auberges et résidences. Réservez en un clic." data-en="Compare the best hotels, guesthouses and residences. Book in one click.">Comparez les meilleurs hôtels, auberges et résidences. Réservez en un clic.</p>
+
         <!-- Search Box -->
-        <div class="bg-white p-4 rounded-xl shadow-2xl max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-4 text-gray-800">
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Ville</label>
-                <select id="city" class="w-full border-none focus:ring-0 font-semibold">
-                    <option value="Ouagadougou">Ouagadougou</option>
-                    <option value="Bobo-Dioulasso">Bobo-Dioulasso</option>
-                    <option value="Koudougou">Koudougou</option>
-                    <option value="Banfora">Banfora</option>
-                </select>
+        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-2xl max-w-5xl mx-auto">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-gray-800">
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1" data-fr="Ville" data-en="City">Ville</label>
+                    <select id="city" class="w-full border border-gray-200 rounded-lg px-3 py-2 font-semibold focus:outline-none focus:border-green-500">
+                        <option value="">Toutes les villes</option>
+                        <option value="Ouagadougou">Ouagadougou</option>
+                        <option value="Bobo-Dioulasso">Bobo-Dioulasso</option>
+                        <option value="Koudougou">Koudougou</option>
+                        <option value="Banfora">Banfora</option>
+                        <option value="Fada N'Gourma">Fada N'Gourma</option>
+                        <option value="Dédougou">Dédougou</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1" data-fr="Type" data-en="Type">Type</label>
+                    <select id="type" class="w-full border border-gray-200 rounded-lg px-3 py-2 font-semibold focus:outline-none focus:border-green-500">
+                        <option value="">Tous</option>
+                        <option value="hotel">🏨 Hôtel</option>
+                        <option value="auberge">🛏 Auberge</option>
+                        <option value="residence">🏠 Résidence</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1" data-fr="Personnes" data-en="Guests">Personnes</label>
+                    <input type="number" id="guests" min="1" value="1" class="w-full border border-gray-200 rounded-lg px-3 py-2 font-semibold focus:outline-none focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-500 mb-1" data-fr="Budget Max" data-en="Max Budget">Budget Max</label>
+                    <input type="number" id="budget" placeholder="FCFA" class="w-full border border-gray-200 rounded-lg px-3 py-2 font-semibold focus:outline-none focus:border-green-500">
+                </div>
+                <button onclick="performSearch()" class="col-span-2 md:col-span-1 bg-faso text-white font-bold rounded-xl py-3 hover:bg-green-700 transition flex items-center justify-center gap-2">
+                    🔍 <span data-fr="Rechercher" data-en="Search">Rechercher</span>
+                </button>
             </div>
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Type</label>
-                <select id="type" class="w-full border-none focus:ring-0 font-semibold">
-                    <option value="hotel">Hôtel</option>
-                    <option value="auberge">Auberge</option>
-                    <option value="residence">Résidence</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Personnes</label>
-                <input type="number" id="guests" min="1" value="1" class="w-full border-none focus:ring-0 font-semibold">
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Budget Max</label>
-                <input type="number" id="budget" placeholder="FCFA" class="w-full border-none focus:ring-0 font-semibold">
-            </div>
-            <button onclick="performSearch()" class="bg-faso text-white font-bold rounded-lg h-full py-3 hover:bg-green-700 transition">🔍 Rechercher</button>
+        </div>
+
+        <!-- Quick stats -->
+        <div class="flex flex-wrap justify-center gap-6 md:gap-12 mt-8 text-sm">
+            <div class="flex items-center gap-2"><span class="text-gold text-2xl font-bold">100+</span><span data-fr="Hôtels partenaires" data-en="Partner hotels">Hôtels partenaires</span></div>
+            <div class="flex items-center gap-2"><span class="text-gold text-2xl font-bold">5000+</span><span data-fr="Réservations" data-en="Bookings">Réservations</span></div>
+            <div class="flex items-center gap-2"><span class="text-gold text-2xl font-bold">13</span><span data-fr="Villes couvertes" data-en="Cities covered">Villes couvertes</span></div>
         </div>
     </div>
 </section>
 
-<!-- Popular Categories -->
+<!-- Categories Section -->
 <section class="max-w-7xl mx-auto px-4 py-20">
-    <div class="flex justify-between items-end mb-12">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold font-serif mb-3" data-fr="Choisissez votre type d'hébergement" data-en="Choose your accommodation type">Choisissez votre type d'hébergement</h2>
+        <p class="text-gray-500" data-fr="De l'hôtel 5 étoiles à l'auberge économique" data-en="From 5-star hotels to budget guesthouses">De l'hôtel 5 étoiles à l'auberge économique</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="{{ url_for('search', type='hotel') }}" class="group relative overflow-hidden rounded-3xl h-64 block">
+            <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 brightness-60" alt="Hotels">
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                <div class="text-5xl mb-3">🏨</div>
+                <h3 class="text-2xl font-bold font-serif" data-fr="Hôtels ⭐⭐⭐⭐⭐" data-en="Hotels ⭐⭐⭐⭐⭐">Hôtels ⭐⭐⭐⭐⭐</h3>
+                <p class="text-sm mt-2 text-gray-200" data-fr="Du 1★ au 5★ — confort et luxe" data-en="From 1★ to 5★ — comfort and luxury">Du 1★ au 5★ — confort et luxe</p>
+                <span class="mt-4 bg-white text-gray-900 px-6 py-2 rounded-full text-sm font-bold group-hover:bg-gold transition" data-fr="Explorer →" data-en="Explore →">Explorer →</span>
+            </div>
+        </a>
+        <a href="{{ url_for('search', type='auberge') }}" class="group relative overflow-hidden rounded-3xl h-64 block">
+            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 brightness-60" alt="Auberges">
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                <div class="text-5xl mb-3">💰</div>
+                <h3 class="text-2xl font-bold font-serif" data-fr="Auberges 💰" data-en="Guesthouses 💰">Auberges 💰</h3>
+                <p class="text-sm mt-2 text-gray-200" data-fr="Meilleur rapport qualité/prix" data-en="Best value for money">Meilleur rapport qualité/prix</p>
+                <span class="mt-4 bg-white text-gray-900 px-6 py-2 rounded-full text-sm font-bold group-hover:bg-gold transition" data-fr="Explorer →" data-en="Explore →">Explorer →</span>
+            </div>
+        </a>
+        <a href="{{ url_for('search', type='residence') }}" class="group relative overflow-hidden rounded-3xl h-64 block">
+            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2" class="w-full h-full object-cover group-hover:scale-110 transition duration-500 brightness-60" alt="Résidences">
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                <div class="text-5xl mb-3">🏠</div>
+                <h3 class="text-2xl font-bold font-serif" data-fr="Résidences Meublées" data-en="Furnished Residences">Résidences Meublées</h3>
+                <p class="text-sm mt-2 text-gray-200" data-fr="Séjour longue durée avec cuisine" data-en="Long stay with kitchen">Séjour longue durée avec cuisine</p>
+                <span class="mt-4 bg-white text-gray-900 px-6 py-2 rounded-full text-sm font-bold group-hover:bg-gold transition" data-fr="Explorer →" data-en="Explore →">Explorer →</span>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- Popular Hotels -->
+<section class="max-w-7xl mx-auto px-4 pb-20">
+    <div class="flex justify-between items-end mb-10">
         <div>
-            <h2 class="text-3xl font-bold font-serif">Hébergements populaires</h2>
-            <p class="text-gray-500">Les établissements les plus réservés ce mois-ci.</p>
+            <h2 class="text-3xl md:text-4xl font-bold font-serif" data-fr="Hébergements populaires" data-en="Popular accommodations">Hébergements populaires</h2>
+            <p class="text-gray-500 mt-1" data-fr="Les établissements les plus réservés ce mois-ci." data-en="The most booked properties this month.">Les établissements les plus réservés ce mois-ci.</p>
         </div>
-        <a href="{{ url_for('search') }}" class="text-faso font-bold border-b-2 border-faso">Voir tout →</a>
+        <a href="{{ url_for('search') }}" class="text-faso font-bold hover:underline hidden md:block" data-fr="Voir tout →" data-en="View all →">Voir tout →</a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {% for hotel in hotels %}
-        <div class="bg-white rounded-2xl overflow-hidden shadow-lg group hover:shadow-2xl transition duration-300">
-            <div class="relative h-64 overflow-hidden">
+        <div class="bg-white rounded-2xl overflow-hidden shadow-md group hover:shadow-2xl transition duration-300">
+            <div class="relative h-56 overflow-hidden">
                 <img src="{{ hotel.image_url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="{{ hotel.name }}">
-                <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-faso">
+                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-faso">
                     {{ hotel.type | capitalize }}
                 </div>
+                {% if hotel.stars and hotel.stars >= 4 %}
+                <div class="absolute top-3 right-3 bg-gold text-white px-2 py-1 rounded-full text-xs font-bold">⭐ Premium</div>
+                {% endif %}
             </div>
-            <div class="p-6">
-                <div class="flex text-gold mb-2">
-                    {% for _ in range(hotel.stars) %}⭐{% endfor %}
+            <div class="p-5">
+                <div class="text-yellow-400 text-sm mb-1">{% for _ in range(hotel.stars or 0) %}⭐{% endfor %}</div>
+                <h3 class="text-lg font-bold mb-1">{{ hotel.name }}</h3>
+                <p class="text-gray-500 text-sm mb-3">📍 {{ hotel.city }}, {{ hotel.address }}</p>
+                {% if hotel.amenities %}
+                <div class="flex flex-wrap gap-1 mb-3">
+                    {% for amenity in hotel.amenities.split(',')[:3] %}
+                    <span class="bg-green-50 text-faso text-xs px-2 py-1 rounded-full">{{ amenity.strip() }}</span>
+                    {% endfor %}
                 </div>
-                <h3 class="text-xl font-bold mb-2">{{ hotel.name }}</h3>
-                <p class="text-gray-500 text-sm mb-4">📍 {{ hotel.city }}, {{ hotel.address }}</p>
-                <div class="flex items-center justify-between border-t pt-4">
-                    <span class="text-2xl font-black text-faso">{{ hotel.price_base | int }} F <span class="text-xs font-normal text-gray-400">/ nuit</span></span>
-                    <a href="{{ url_for('hotel_detail', hotel_id=hotel.id) }}" class="bg-dark text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-gold hover:text-dark transition">Détails</a>
+                {% endif %}
+                <div class="flex items-center justify-between border-t pt-3">
+                    <div>
+                        <span class="text-xl font-black text-faso">{{ hotel.price_base | int }} F</span>
+                        <span class="text-xs text-gray-400" data-fr="/ nuit" data-en="/ night"> / nuit</span>
+                    </div>
+                    <a href="{{ url_for('hotel_detail', hotel_id=hotel.id) }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-gold hover:text-gray-900 transition" data-fr="Réserver" data-en="Book">Réserver</a>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
+    <div class="text-center mt-8 md:hidden">
+        <a href="{{ url_for('search') }}" class="inline-block bg-faso text-white px-8 py-3 rounded-full font-bold hover:bg-green-700 transition" data-fr="Voir tous les hébergements" data-en="View all accommodations">Voir tous les hébergements</a>
+    </div>
 </section>
 
-<!-- Mobile Money Info -->
+<!-- Promotions Section -->
+<section class="bg-gradient-to-r from-green-900 to-green-700 py-20 text-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-12">
+            <div>
+                <span class="bg-gold text-gray-900 px-3 py-1 rounded-full text-xs font-black uppercase mb-3 inline-block">🔥 Offres Limitées</span>
+                <h2 class="text-3xl md:text-4xl font-bold font-serif" data-fr="Promotions du moment" data-en="Current promotions">Promotions du moment</h2>
+            </div>
+            <a href="{{ url_for('search') }}" class="mt-4 md:mt-0 bg-white text-gray-900 px-6 py-2 rounded-full font-bold hover:bg-gold transition" data-fr="Voir toutes les offres" data-en="See all deals">Voir toutes les offres</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for hotel in hotels[:3] %}
+            <div class="bg-white/10 backdrop-blur rounded-2xl p-6 hover:bg-white/20 transition border border-white/20">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">-20%</span>
+                        <h3 class="text-lg font-bold mt-2">{{ hotel.name }}</h3>
+                        <p class="text-green-200 text-sm">📍 {{ hotel.city }}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs line-through text-gray-300">{{ (hotel.price_base * 1.25) | int }} F</span>
+                        <p class="text-xl font-black text-gold">{{ hotel.price_base | int }} F</p>
+                        <span class="text-xs text-gray-300" data-fr="/nuit" data-en="/night">/nuit</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('hotel_detail', hotel_id=hotel.id) }}" class="block bg-gold text-gray-900 text-center py-2 rounded-xl font-bold hover:bg-yellow-400 transition text-sm" data-fr="Profiter de l'offre" data-en="Get this deal">Profiter de l'offre →</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- How it works -->
+<section class="max-w-7xl mx-auto px-4 py-20">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold font-serif" data-fr="Réservez en 3 étapes simples" data-en="Book in 3 simple steps">Réservez en 3 étapes simples</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🔍</div>
+            <h3 class="text-xl font-bold mb-2" data-fr="1. Recherchez" data-en="1. Search">1. Recherchez</h3>
+            <p class="text-gray-500" data-fr="Choisissez votre ville, votre budget et votre type d'hébergement." data-en="Choose your city, budget and accommodation type.">Choisissez votre ville, votre budget et votre type d'hébergement.</p>
+        </div>
+        <div class="text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">📅</div>
+            <h3 class="text-xl font-bold mb-2" data-fr="2. Réservez" data-en="2. Book">2. Réservez</h3>
+            <p class="text-gray-500" data-fr="Sélectionnez vos dates et confirmez votre chambre en un clic." data-en="Select your dates and confirm your room in one click.">Sélectionnez vos dates et confirmez votre chambre en un clic.</p>
+        </div>
+        <div class="text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition">
+            <div class="w-16 h-16 bg-gold rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">📱</div>
+            <h3 class="text-xl font-bold mb-2" data-fr="3. Payez & Profitez" data-en="3. Pay & Enjoy">3. Payez & Profitez</h3>
+            <p class="text-gray-500" data-fr="Payez via Mobile Money et recevez votre QR Code de confirmation." data-en="Pay via Mobile Money and receive your QR Code confirmation.">Payez via Mobile Money et recevez votre QR Code de confirmation.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
 <section class="bg-gray-100 py-20">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-4">Paiement Mobile Money & QR Code</h2>
-        <p class="text-gray-600 mb-12">Payez votre avance en toute sécurité avec vos services locaux.</p>
-        <div class="flex flex-wrap justify-center gap-8">
-            <div class="bg-white p-6 rounded-xl shadow-md w-40 flex flex-col items-center">
-                <div class="w-16 h-16 bg-orange-500 rounded-full mb-4"></div>
-                <span class="font-bold">Orange Money</span>
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold font-serif" data-fr="Ce que disent nos clients" data-en="What our customers say">Ce que disent nos clients</h2>
+            <p class="text-gray-500 mt-2" data-fr="Des milliers de voyageurs nous font confiance" data-en="Thousands of travelers trust us">Des milliers de voyageurs nous font confiance</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-xl">A</div>
+                    <div>
+                        <h4 class="font-bold">Aminata S.</h4>
+                        <p class="text-gray-400 text-xs">Ouagadougou</p>
+                    </div>
+                    <div class="ml-auto text-yellow-400">⭐⭐⭐⭐⭐</div>
+                </div>
+                <p class="text-gray-600 italic" data-fr='"Super plateforme ! J\'ai réservé mon hôtel en 2 minutes et j\'ai reçu mon QR Code immédiatement."' data-en='"Amazing platform! I booked my hotel in 2 minutes and received my QR code immediately."'>"Super plateforme ! J'ai réservé mon hôtel en 2 minutes et j'ai reçu mon QR Code immédiatement."</p>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-md w-40 flex flex-col items-center">
-                <div class="w-16 h-16 bg-blue-600 rounded-full mb-4"></div>
-                <span class="font-bold">Moov Money</span>
+            <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">K</div>
+                    <div>
+                        <h4 class="font-bold">Kofi M.</h4>
+                        <p class="text-gray-400 text-xs">Bobo-Dioulasso</p>
+                    </div>
+                    <div class="ml-auto text-yellow-400">⭐⭐⭐⭐⭐</div>
+                </div>
+                <p class="text-gray-600 italic" data-fr='"Paiement Orange Money très facile. Je recommande GAANSAOBA à tous mes collègues en déplacement."' data-en='"Very easy Orange Money payment. I recommend GAANSAOBA to all my colleagues on business trips."'>"Paiement Orange Money très facile. Je recommande GAANSAOBA à tous mes collègues en déplacement."</p>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-md w-40 flex flex-col items-center">
-                <div class="w-16 h-16 bg-red-600 rounded-full mb-4"></div>
-                <span class="font-bold">Telecel Money</span>
+            <div class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-gold rounded-full flex items-center justify-center text-white font-bold text-xl">F</div>
+                    <div>
+                        <h4 class="font-bold">Fatou D.</h4>
+                        <p class="text-gray-400 text-xs">Touriste internationale</p>
+                    </div>
+                    <div class="ml-auto text-yellow-400">⭐⭐⭐⭐⭐</div>
+                </div>
+                <p class="text-gray-600 italic" data-fr='"Visiter le Burkina Faso était un rêve. Grâce à GAANSAOBA, j\'ai trouvé l\'hôtel parfait en quelques clics !"' data-en='"Visiting Burkina Faso was a dream. Thanks to GAANSAOBA, I found the perfect hotel in just a few clicks!"'>"Visiter le Burkina Faso était un rêve. Grâce à GAANSAOBA, j'ai trouvé l'hôtel parfait en quelques clics !"</p>
             </div>
         </div>
+    </div>
+</section>
+
+<!-- Mobile Money Section -->
+<section class="max-w-7xl mx-auto px-4 py-20">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold font-serif" data-fr="Paiement 100% sécurisé" data-en="100% Secure Payment">Paiement 100% sécurisé</h2>
+        <p class="text-gray-500 mt-2" data-fr="Payez votre avance avec vos services locaux préférés" data-en="Pay your advance with your preferred local services">Payez votre avance avec vos services locaux préférés</p>
+    </div>
+    <div class="flex flex-wrap justify-center gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-md w-44 flex flex-col items-center hover:shadow-lg transition border border-gray-100">
+            <div class="w-16 h-16 bg-orange-500 rounded-full mb-3 flex items-center justify-center text-white font-black text-xl">O</div>
+            <span class="font-bold">Orange Money</span>
+            <span class="text-xs text-gray-400 mt-1">Burkina Faso</span>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-md w-44 flex flex-col items-center hover:shadow-lg transition border border-gray-100">
+            <div class="w-16 h-16 bg-blue-600 rounded-full mb-3 flex items-center justify-center text-white font-black text-xl">M</div>
+            <span class="font-bold">Moov Money</span>
+            <span class="text-xs text-gray-400 mt-1">Burkina Faso</span>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-md w-44 flex flex-col items-center hover:shadow-lg transition border border-gray-100">
+            <div class="w-16 h-16 bg-red-600 rounded-full mb-3 flex items-center justify-center text-white font-black text-xl">T</div>
+            <span class="font-bold">Telecel Money</span>
+            <span class="text-xs text-gray-400 mt-1">Burkina Faso</span>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-md w-44 flex flex-col items-center hover:shadow-lg transition border border-gray-100">
+            <div class="w-16 h-16 bg-purple-600 rounded-full mb-3 flex items-center justify-center text-white font-black text-2xl">💳</div>
+            <span class="font-bold" data-fr="Carte Bancaire" data-en="Bank Card">Carte Bancaire</span>
+            <span class="text-xs text-gray-400 mt-1">Visa / Mastercard</span>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-md w-44 flex flex-col items-center hover:shadow-lg transition border border-gray-100">
+            <div class="w-16 h-16 bg-gray-800 rounded-full mb-3 flex items-center justify-center text-white font-black text-2xl">📱</div>
+            <span class="font-bold">QR Code</span>
+            <span class="text-xs text-gray-400 mt-1" data-fr="Confirmation auto" data-en="Auto confirmation">Confirmation auto</span>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="bg-gradient-to-r from-green-600 to-green-800 py-20 text-white text-center">
+    <div class="max-w-3xl mx-auto px-4">
+        <h2 class="text-3xl md:text-5xl font-bold font-serif mb-4" data-fr="Vous êtes hôtelier ?" data-en="Are you a hotel owner?">Vous êtes hôtelier ?</h2>
+        <p class="text-green-200 text-lg mb-8" data-fr="Rejoignez GAANSAOBA et recevez des réservations de toute l'Afrique de l'Ouest dès aujourd'hui." data-en="Join GAANSAOBA and receive bookings from all of West Africa today.">Rejoignez GAANSAOBA et recevez des réservations de toute l'Afrique de l'Ouest dès aujourd'hui.</p>
+        <a href="{{ url_for('register') }}" class="bg-gold text-gray-900 px-10 py-4 rounded-full font-black text-lg hover:bg-yellow-300 transition inline-block" data-fr="Inscrire mon établissement gratuitement →" data-en="List my property for free →">Inscrire mon établissement gratuitement →</a>
     </div>
 </section>
 

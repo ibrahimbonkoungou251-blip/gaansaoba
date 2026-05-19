@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nos Auberges - GAANSAOBA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .page-header {
+      padding: 150px 0 60px;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1600') center/cover;
+      color: white;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header scrolled" id="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo"><span class="logo-text">GAANSAOBA</span></a>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="hotels.html" class="nav-link">Hôtels</a>
+        <a href="auberges.html" class="nav-link active">Auberges</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container">
+      <h1 class="hero-title">Auberges du Faso</h1>
+      <p>Confort et authenticité à prix abordables.</p>
+    </div>
+  </section>
+
+  <section class="listing-container" style="padding: 60px 0;">
+    <div class="container">
+      <div class="hotels-grid" id="aubergesGrid"></div>
+    </div>
+  </section>
+
+  <script src="js/data.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const grid = document.getElementById('aubergesGrid');
+      const auberges = hotelsData.filter(h => h.type === 'auberge');
+      auberges.forEach(hotel => {
+        const card = document.createElement('div');
+        card.className = 'hotel-card';
+        card.innerHTML = `
+          <div class="hotel-img-wrapper"><img src="${hotel.image}"></div>
+          <div class="hotel-info">
+            <h3 class="hotel-name">${hotel.name}</h3>
+            <p class="hotel-location">📍 ${hotel.location}</p>
+            <div class="hotel-footer">
+              <div class="hotel-price">${hotel.price.toLocaleString()} F CFA</div>
+              <button class="btn-primary">Réserver</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>
