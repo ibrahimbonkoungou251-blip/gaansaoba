@@ -1,19 +1,59 @@
 {
-  "name": "GAANSAOBA",
-  "short_name": "Gaansaoba",
-  "description": "La plus grande plateforme de réservation d'hébergement au Burkina Faso",
-  "start_url": "/",
+  "name": "GAANSAOBA - Hôtels Burkina Faso",
+  "short_name": "GAANSAOBA",
+  "description": "Trouvez et réservez les meilleurs hôtels, auberges et résidences du Burkina Faso. Paiement Mobile Money sécurisé.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#009E49",
   "lang": "fr",
-  "orientation": "portrait",
+  "dir": "ltr",
+  "orientation": "portrait-primary",
+  "id": "gaansaoba-bf-hotel-platform",
+  "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "/static/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/static/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/static/icons/icon-512.png",
@@ -22,18 +62,36 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["travel", "lifestyle"],
+  "categories": ["travel", "lifestyle", "business"],
+  "screenshots": [
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Page d'accueil GAANSAOBA"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Rechercher un hôtel",
-      "short_name": "Hôtels",
+      "short_name": "Hôtels ⭐",
+      "description": "Trouver les meilleurs hôtels",
       "url": "/search?type=hotel",
       "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
     },
     {
-      "name": "Auberges",
+      "name": "Auberges économiques",
       "short_name": "Auberges",
+      "description": "Hébergements accessibles",
       "url": "/search?type=auberge",
+      "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Promotions du moment",
+      "short_name": "Promos 🔥",
+      "description": "Meilleures offres en cours",
+      "url": "/promotions",
       "icons": [{"src": "/static/icons/icon-192.png", "sizes": "192x192"}]
     }
   ]

@@ -417,6 +417,16 @@ def privacy():
     flash('Notre politique de confidentialité sera bientôt disponible en ligne.', 'success')
     return redirect(url_for('index'))
 
+# ========== PLAY STORE TWA — Digital Asset Links ==========
+@app.route('/.well-known/assetlinks.json')
+def assetlinks():
+    """Required for Google Play Store TWA verification."""
+    from flask import send_from_directory
+    return send_from_directory('static/.well-known', 'assetlinks.json',
+                               mimetype='application/json')
+
+
+
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
