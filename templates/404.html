@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Page introuvable - GAANSAOBA{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4">
+    <div class="text-center max-w-lg mx-auto">
+        <div class="text-8xl mb-6">🏨</div>
+        <h1 class="text-6xl font-black text-faso mb-4">404</h1>
+        <h2 class="text-2xl font-bold font-serif text-gray-800 mb-4">Page introuvable</h2>
+        <p class="text-gray-500 mb-8 text-lg leading-relaxed">
+            Désolé, la page que vous recherchez n'existe pas ou a été déplacée.
+            <br>Peut-être cherchez-vous un hôtel au Burkina Faso ?
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ url_for('index') }}" class="bg-faso text-white px-8 py-4 rounded-xl font-bold hover:bg-green-700 transition shadow-lg">
+                🏠 Retour à l'accueil
+            </a>
+            <a href="{{ url_for('search') }}" class="border-2 border-faso text-faso px-8 py-4 rounded-xl font-bold hover:bg-faso hover:text-white transition">
+                🔍 Chercher un hôtel
+            </a>
+        </div>
+        <p class="mt-8 text-gray-400 text-sm italic">"Dormez partout au Burkina, réservez en toute confiance." 🇧🇫</p>
+    </div>
+</div>
+{% endblock %}

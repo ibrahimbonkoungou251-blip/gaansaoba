@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Gestion des Utilisateurs - GAANSAOBA Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex justify-between items-center mb-10">
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}" class="text-gray-400 hover:text-gray-700 text-sm font-bold mb-2 inline-flex items-center gap-1">← Retour au Dashboard</a>
+            <h1 class="text-3xl font-bold font-serif mt-1">👤 Gestion des Utilisateurs</h1>
+            <p class="text-gray-500 mt-1">{{ users | length }} utilisateur(s) enregistré(s)</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="p-6 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-gray-800">Tous les comptes</h2>
+            <div class="flex gap-3 text-sm">
+                <span class="px-3 py-1 bg-green-50 text-faso rounded-full font-bold">Admins : {{ users | selectattr('role','eq','admin') | list | length }}</span>
+                <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full font-bold">Hôteliers : {{ users | selectattr('role','eq','hotelier') | list | length }}</span>
+                <span class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full font-bold">Clients : {{ users | selectattr('role','eq','client') | list | length }}</span>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold">
+                    <tr>
+                        <th class="px-6 py-4">ID</th>
+                        <th class="px-6 py-4">Nom d'utilisateur</th>
+                        <th class="px-6 py-4">Email</th>
+                        <th class="px-6 py-4">Rôle actuel</th>
+                        <th class="px-6 py-4">Changer le rôle</th>
+                        <th class="px-6 py-4">Supprimer</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    {% for user in users %}
+                    <tr class="hover:bg-gray-50 transition {% if user.id == current_user.id %}bg-green-50/40{% endif %}">
+                        <td class="px-6 py-4 text-gray-400 text-sm font-mono">#{{ user.id }}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm
+                                    {% if user.role == 'admin' %}bg-faso
+                                    {% elif user.role == 'hotelier' %}bg-blue-600
+                                    {% else %}bg-gray-400{% endif %}">
+                                    {{ user.username[0]|upper }}
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-900">{{ user.username }}</p>
+                                    {% if user.id == current_user.id %}
+                                    <p class="text-[10px] text-faso font-bold uppercase">— Vous</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 text-sm">{{ user.email or '—' }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold
+                                {% if user.role == 'admin' %}bg-green-100 text-faso
+                                {% elif user.role == 'hotelier' %}bg-blue-100 text-blue-700
+                                {% else %}bg-gray-100 text-gray-600{% endif %}">
+                                {{ user.role | capitalize }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if user.id != current_user.id %}
+                            <form method="POST" action="{{ url_for('admin_change_role', user_id=user.id) }}" class="flex items-center gap-2">
+                                <select name="role" class="text-sm border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:border-faso">
+                                    <option value="client" {% if user.role == 'client' %}selected{% endif %}>Client</option>
+                                    <option value="hotelier" {% if user.role == 'hotelier' %}selected{% endif %}>Hôtelier</option>
+                                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                                </select>
+                                <button type="submit" class="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition text-xs font-bold">Appliquer</button>
+                            </form>
+                            {% else %}
+                            <span class="text-gray-300 text-sm italic">Votre compte</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if user.id != current_user.id %}
+                            <form method="POST" action="{{ url_for('admin_delete_user', user_id=user.id) }}" onsubmit="return confirm('Supprimer le compte de {{ user.username }} ? Cette action est irréversible.')">
+                                <button type="submit" class="px-3 py-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-600 hover:text-white transition text-sm font-bold">🗑️ Supprimer</button>
+                            </form>
+                            {% else %}
+                            <span class="text-gray-300 text-sm">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

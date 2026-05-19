@@ -51,6 +51,7 @@ class Booking(db.Model):
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
     guest_name = db.Column(db.String(100), nullable=False)
     guest_phone = db.Column(db.String(20), nullable=False)
+    guest_email = db.Column(db.String(100), nullable=True)
     check_in = db.Column(db.DateTime, nullable=False)
     check_out = db.Column(db.DateTime, nullable=False)
     total_price = db.Column(db.Float, nullable=False)

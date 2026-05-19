@@ -489,17 +489,33 @@ def book():
     if not room:
         flash('Chambre introuvable.', 'error')
         return redirect(url_for('index'))
-    guest_name = request.form.get('name')
-    guest_phone = request.form.get('phone')
-    check_in = datetime.strptime(request.form.get('check_in'), '%Y-%m-%d')
-    check_out = datetime.strptime(request.form.get('check_out'), '%Y-%m-%d')
+    
+    guest_name = sanitize(request.form.get('name', ''), 100)
+    guest_phone = sanitize(request.form.get('phone', ''), 20)
+    guest_email = sanitize(request.form.get('email', ''), 100)
+    
+    if not guest_name or not guest_phone:
+        flash('Veuillez remplir tous les champs obligatoires.', 'error')
+        return redirect(url_for('hotel_detail', hotel_id=room.hotel_id))
+    
+    try:
+        check_in = datetime.strptime(request.form.get('check_in'), '%Y-%m-%d')
+        check_out = datetime.strptime(request.form.get('check_out'), '%Y-%m-%d')
+    except (ValueError, TypeError):
+        flash('Dates invalides. Veuillez saisir des dates correctes.', 'error')
+        return redirect(url_for('hotel_detail', hotel_id=room.hotel_id))
+    
+    if check_out <= check_in:
+        flash('La date de départ doit être après la date d\'arrivée.', 'error')
+        return redirect(url_for('hotel_detail', hotel_id=room.hotel_id))
     
     days = (check_out - check_in).days
     total = days * room.price
     
-    booking = Booking(hotel_id=room.hotel_id, room_id=room.id, 
+    booking = Booking(hotel_id=room.hotel_id, room_id=room.id,
                       guest_name=guest_name, guest_phone=guest_phone,
-                      check_in=check_in, check_out=check_out, 
+                      guest_email=guest_email,
+                      check_in=check_in, check_out=check_out,
                       total_price=total, status='pending')
     
     db.session.add(booking)
@@ -549,12 +565,15 @@ def admin_dashboard():
         return redirect(url_for('index'))
     hotels = Hotel.query.all()
     bookings = Booking.query.order_by(Booking.created_at.desc()).all()
+    users = User.query.all()
     stats = {
         'total_hotels': len(hotels),
         'total_bookings': len(bookings),
-        'revenue': sum(b.total_price for b in bookings if b.status == 'confirmed')
+        'total_users': len(users),
+        'revenue': sum(b.total_price for b in bookings if b.status == 'confirmed'),
+        'pending': sum(1 for b in bookings if b.status == 'pending')
     }
-    return render_template('admin/dashboard.html', hotels=hotels, bookings=bookings, stats=stats)
+    return render_template('admin/dashboard.html', hotels=hotels, bookings=bookings, users=users, stats=stats)
 
 @app.route('/admin/hotel/new', methods=['GET', 'POST'])
 @login_required
@@ -625,6 +644,61 @@ def hotelier_confirm_booking(booking_id):
     db.session.commit()
     flash('Réservation confirmée avec succès.', 'success')
     return redirect(url_for('hotelier_dashboard'))
+
+# ========== ADMIN: GESTION DES UTILISATEURS ==========
+@app.route('/admin/users')
+@login_required
+def admin_users():
+    if current_user.role != 'admin':
+        flash('Accès refusé.', 'error')
+        return redirect(url_for('index'))
+    users = User.query.all()
+    return render_template('admin/users.html', users=users)
+
+@app.route('/admin/user/<int:user_id>/delete', methods=['POST'])
+@login_required
+def admin_delete_user(user_id):
+    if current_user.role != 'admin':
+        flash('Accès refusé.', 'error')
+        return redirect(url_for('index'))
+    if user_id == current_user.id:
+        flash('Vous ne pouvez pas supprimer votre propre compte.', 'error')
+        return redirect(url_for('admin_users'))
+    user = db.session.get(User, user_id)
+    if not user:
+        abort(404)
+    db.session.delete(user)
+    db.session.commit()
+    flash(f'Utilisateur "{user.username}" supprimé avec succès.', 'success')
+    return redirect(url_for('admin_users'))
+
+@app.route('/admin/user/<int:user_id>/role', methods=['POST'])
+@login_required
+def admin_change_role(user_id):
+    if current_user.role != 'admin':
+        flash('Accès refusé.', 'error')
+        return redirect(url_for('index'))
+    user = db.session.get(User, user_id)
+    if not user:
+        abort(404)
+    new_role = request.form.get('role')
+    if new_role in ['client', 'hotelier', 'admin']:
+        user.role = new_role
+        db.session.commit()
+        flash(f'Rôle de "{user.username}" changé en "{new_role}".', 'success')
+    return redirect(url_for('admin_users'))
+
+
+# ========== PAGE 404 PERSONNALISEE ==========
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(e):
+    db.session.rollback()
+    return render_template('404.html'), 500
+
 
 if __name__ == '__main__':
     with app.app_context():

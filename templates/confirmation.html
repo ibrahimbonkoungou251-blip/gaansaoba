@@ -32,10 +32,19 @@
 
         <div class="flex flex-col md:flex-row gap-4">
             <button onclick="window.print()" class="flex-1 bg-dark text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition">🖨️ Imprimer Reçu</button>
-            <a href="{{ url_for('index') }}" class="flex-1 border-2 border-faso text-faso py-3 rounded-xl font-bold hover:bg-faso hover:text-white transition">Retour à l'accueil</a>
+            <a href="{{ url_for('index') }}" class="flex-1 border-2 border-faso text-faso py-3 rounded-xl font-bold hover:bg-faso hover:text-white transition text-center">Retour à l'accueil</a>
+        </div>
+
+        <div class="mt-6 flex gap-3 justify-center">
+            <a href="https://wa.me/{{ booking.hotel.whatsapp|replace(' ','')|replace('+','') }}" target="_blank"
+               class="inline-flex items-center gap-2 bg-green-500 text-white px-5 py-3 rounded-xl text-sm font-bold hover:bg-green-600 transition">
+               💬 Contacter l'hôtel sur WhatsApp
+            </a>
         </div>
     </div>
-    
-    <p class="mt-8 text-gray-500 text-sm">Un SMS et un Email de confirmation vous ont été envoyés. 📲📧</p>
+
+    <p class="mt-8 text-gray-400 text-sm italic text-center">
+        ⚠️ Ceci est une confirmation de réservation simulée. Présentez votre QR Code à la réception de l'établissement.
+    </p>
 </div>
 {% endblock %}
