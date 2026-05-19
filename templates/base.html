@@ -45,7 +45,9 @@
                     <a href="{{ url_for('index') }}" class="text-gray-700 hover:text-faso font-medium transition" data-fr="Accueil" data-en="Home">Accueil</a>
                     <a href="{{ url_for('search', type='hotel') }}" class="text-gray-700 hover:text-faso font-medium transition" data-fr="Hôtels" data-en="Hotels">Hôtels</a>
                     <a href="{{ url_for('search', type='auberge') }}" class="text-gray-700 hover:text-faso font-medium transition" data-fr="Auberges" data-en="Guesthouses">Auberges</a>
+                    <a href="{{ url_for('promotions') }}" class="text-red-500 hover:text-red-700 font-bold transition flex items-center gap-1" data-fr="🔥 Promos" data-en="🔥 Deals">🔥 Promos</a>
                     <a href="{{ url_for('contact') }}" class="text-gray-700 hover:text-faso font-medium transition" data-fr="Contact" data-en="Contact">Contact</a>
+
 
                     {% if current_user.is_authenticated %}
                         {% if current_user.role == 'hotelier' %}
@@ -85,11 +87,12 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden bg-white border-t border-gray-100 px-4">
             <div class="flex flex-col py-3 space-y-1">
-                <a href="{{ url_for('index') }}" class="py-3 px-4 rounded-lg text-gray-700 hover:bg-green-50 hover:text-faso font-medium" data-fr="Accueil" data-en="Home">🏠 Accueil</a>
-                <a href="{{ url_for('search', type='hotel') }}" class="py-3 px-4 rounded-lg text-gray-700 hover:bg-green-50 hover:text-faso font-medium" data-fr="Hôtels ⭐" data-en="Hotels ⭐">🏨 Hôtels ⭐</a>
-                <a href="{{ url_for('search', type='auberge') }}" class="py-3 px-4 rounded-lg text-gray-700 hover:bg-green-50 hover:text-faso font-medium" data-fr="Auberges" data-en="Guesthouses">🛏 Auberges</a>
-                <a href="{{ url_for('search', type='residence') }}" class="py-3 px-4 rounded-lg text-gray-700 hover:bg-green-50 hover:text-faso font-medium" data-fr="Résidences" data-en="Residences">🏠 Résidences</a>
-                <a href="{{ url_for('contact') }}" class="py-3 px-4 rounded-lg text-gray-700 hover:bg-green-50 hover:text-faso font-medium" data-fr="Contact" data-en="Contact">📞 Contact</a>
+                <a href="{{ url_for('index') }}" class="py-3 px-4 rounded-lg text-gray-700 hover:bg-green-50 hover:text-faso font-medium" data-fr="🏠 Accueil" data-en="🏠 Home">🏠 Accueil</a>
+                <a href="{{ url_for('search', type='hotel') }}" class="py-3 px-4 rounded-lg text-gray-700 hover:bg-green-50 hover:text-faso font-medium" data-fr="🏨 Hôtels ⭐" data-en="🏨 Hotels ⭐">🏨 Hôtels ⭐</a>
+                <a href="{{ url_for('search', type='auberge') }}" class="py-3 px-4 rounded-lg text-gray-700 hover:bg-green-50 hover:text-faso font-medium" data-fr="🛏 Auberges" data-en="🛏 Guesthouses">🛏 Auberges</a>
+                <a href="{{ url_for('search', type='residence') }}" class="py-3 px-4 rounded-lg text-gray-700 hover:bg-green-50 hover:text-faso font-medium" data-fr="🏠 Résidences" data-en="🏠 Residences">🏠 Résidences</a>
+                <a href="{{ url_for('promotions') }}" class="py-3 px-4 rounded-lg text-red-500 hover:bg-red-50 font-bold" data-fr="🔥 Promotions" data-en="🔥 Deals">🔥 Promotions</a>
+                <a href="{{ url_for('contact') }}" class="py-3 px-4 rounded-lg text-gray-700 hover:bg-green-50 hover:text-faso font-medium" data-fr="📞 Contact" data-en="📞 Contact">📞 Contact</a>
                 <div class="border-t border-gray-100 pt-2 mt-2">
                 {% if current_user.is_authenticated %}
                     {% if current_user.role == 'hotelier' %}

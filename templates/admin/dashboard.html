@@ -1,11 +1,139 @@
 {% extends "base.html" %}
+{% block title %}Dashboard Admin - GAANSAOBA{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 py-12">
     <div class="flex justify-between items-center mb-12">
-        <h1 class="text-3xl font-bold font-serif">Tableau de bord Administrateur</h1>
-        <a href="{{ url_for('admin_add_hotel') }}" class="bg-faso text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:bg-green-700 transition inline-block">＋ Ajouter un établissement</a>
+        <h1 class="text-3xl font-bold font-serif">⚙️ Tableau de bord Administrateur</h1>
+        <a href="{{ url_for('admin_add_hotel') }}" class="bg-faso text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-green-700 transition inline-flex items-center gap-2">＋ Ajouter un établissement</a>
     </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <div class="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-gold">
+            <span class="text-gray-400 font-bold uppercase text-xs">Établissements</span>
+            <p class="text-4xl font-black text-dark mt-2">{{ stats.total_hotels }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-faso">
+            <span class="text-gray-400 font-bold uppercase text-xs">Réservations</span>
+            <p class="text-4xl font-black text-dark mt-2">{{ stats.total_bookings }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-blue-500">
+            <span class="text-gray-400 font-bold uppercase text-xs">Chiffre d'affaires</span>
+            <p class="text-2xl font-black text-dark mt-2">{{ stats.revenue|int }} F</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-yellow-500">
+            <span class="text-gray-400 font-bold uppercase text-xs">En attente</span>
+            <p class="text-4xl font-black text-dark mt-2">{{ bookings|selectattr('status','eq','pending')|list|length }}</p>
+        </div>
+    </div>
+
+    <!-- Hotels List with Edit/Delete -->
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 mb-8 overflow-hidden">
+        <div class="p-6 border-b border-gray-50 flex justify-between items-center">
+            <h2 class="text-xl font-bold">🏨 Tous les établissements</h2>
+            <span class="text-gray-400 text-sm">{{ stats.total_hotels }} au total</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold">
+                    <tr>
+                        <th class="px-6 py-4">Établissement</th>
+                        <th class="px-6 py-4">Type</th>
+                        <th class="px-6 py-4">Ville</th>
+                        <th class="px-6 py-4">Prix/nuit</th>
+                        <th class="px-6 py-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    {% for hotel in hotels %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <img src="{{ hotel.image_url }}" class="w-12 h-12 rounded-xl object-cover">
+                                <div>
+                                    <p class="font-bold">{{ hotel.name }}</p>
+                                    <p class="text-xs text-gold">{% for _ in range(hotel.stars or 0) %}⭐{% endfor %}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 capitalize text-gray-600">{{ hotel.type }}</td>
+                        <td class="px-6 py-4 text-gray-600">{{ hotel.city }}</td>
+                        <td class="px-6 py-4 font-bold text-faso">{{ hotel.price_base|int }} F</td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-2">
+                                <a href="{{ url_for('admin_edit_hotel', hotel_id=hotel.id) }}" class="px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition text-sm font-bold">✏️ Modifier</a>
+                                <form method="POST" action="{{ url_for('admin_delete_hotel', hotel_id=hotel.id) }}" onsubmit="return confirm('Supprimer {{ hotel.name }} ? Cette action est irréversible.')">
+                                    <button type="submit" class="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition text-sm font-bold">🗑️</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Bookings Table -->
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+        <div class="p-6 border-b border-gray-50">
+            <h2 class="text-xl font-bold">📋 Réservations récentes</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold">
+                    <tr>
+                        <th class="px-6 py-4">Client</th>
+                        <th class="px-6 py-4">Hôtel</th>
+                        <th class="px-6 py-4">Dates</th>
+                        <th class="px-6 py-4">Montant</th>
+                        <th class="px-6 py-4">Statut</th>
+                        <th class="px-6 py-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    {% for booking in bookings %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4">
+                            <p class="font-bold">{{ booking.guest_name }}</p>
+                            <p class="text-xs text-gray-400">{{ booking.guest_phone }}</p>
+                        </td>
+                        <td class="px-6 py-4 text-gray-700 font-medium">{{ booking.hotel.name }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500">
+                            {{ booking.check_in.strftime('%d/%m/%Y') }} → {{ booking.check_out.strftime('%d/%m/%Y') }}
+                        </td>
+                        <td class="px-6 py-4 font-bold">{{ booking.total_price|int }} F</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold
+                                {% if booking.status == 'pending' %}bg-yellow-100 text-yellow-700
+                                {% elif booking.status == 'confirmed' %}bg-green-100 text-faso
+                                {% else %}bg-red-100 text-red-700{% endif %}">
+                                {{ booking.status | capitalize }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-2">
+                                <a href="{{ url_for('confirmation', booking_id=booking.id) }}" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition text-sm" title="Voir">👁️</a>
+                                {% if booking.status == 'pending' %}
+                                <form method="POST" action="{{ url_for('admin_confirm_booking', booking_id=booking.id) }}" class="inline">
+                                    <button type="submit" class="p-2 bg-green-50 text-faso rounded-lg hover:bg-faso hover:text-white transition text-sm" title="Confirmer">✓</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin_cancel_booking', booking_id=booking.id) }}" class="inline">
+                                    <button type="submit" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition text-sm" title="Annuler">✕</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">

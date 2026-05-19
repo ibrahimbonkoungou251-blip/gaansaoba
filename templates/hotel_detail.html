@@ -24,15 +24,51 @@
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                     <span class="block text-gray-400 text-xs font-bold uppercase mb-1">WhatsApp</span>
-                    <p class="font-bold text-green-600">📗 {{ hotel.whatsapp }}</p>
+                    <a href="https://wa.me/{{ hotel.whatsapp|replace(' ','')|replace('+','') }}" target="_blank" class="font-bold text-green-600 hover:underline">💬 {{ hotel.whatsapp }}</a>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <span class="block text-gray-400 text-xs font-bold uppercase mb-1">Téléphone</span>
+                    <a href="tel:{{ hotel.phone }}" class="font-bold text-gray-800">📞 {{ hotel.phone }}</a>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <span class="block text-gray-400 text-xs font-bold uppercase mb-1">Email</span>
+                    <a href="mailto:{{ hotel.email }}" class="font-bold text-blue-600 hover:underline text-sm truncate block">✉️ {{ hotel.email }}</a>
                 </div>
             </div>
+            {% if hotel.website %}
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8">
+                <span class="block text-gray-400 text-xs font-bold uppercase mb-1">Site web</span>
+                <a href="{{ hotel.website }}" target="_blank" rel="noopener" class="font-bold text-faso hover:underline">🌐 {{ hotel.website }}</a>
+            </div>
+            {% endif %}
 
             <h3 class="font-bold text-xl mb-4">Services inclus</h3>
             <div class="flex flex-wrap gap-3">
+                {% if hotel.amenities %}
                 {% for amenity in hotel.amenities.split(',') %}
-                <span class="bg-faso/10 text-faso px-4 py-2 rounded-full font-medium text-sm">✓ {{ amenity }}</span>
+                <span class="bg-faso/10 text-faso px-4 py-2 rounded-full font-medium text-sm">✓ {{ amenity.strip() }}</span>
                 {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Google Maps Embed -->
+            <div class="mt-8">
+                <h3 class="font-bold text-xl mb-4">📍 Localisation sur Google Maps</h3>
+                <div class="rounded-2xl overflow-hidden shadow-lg border border-gray-100 h-64">
+                    <iframe
+                        width="100%"
+                        height="100%"
+                        frameborder="0"
+                        style="border:0"
+                        loading="lazy"
+                        allowfullscreen
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://maps.google.com/maps?q={{ (hotel.name + ' ' + hotel.city + ' Burkina Faso')|urlencode }}&output=embed&z=14">
+                    </iframe>
+                </div>
+                <a href="https://www.google.com/maps/search/{{ (hotel.name + ' ' + hotel.city + ' Burkina Faso')|urlencode }}" target="_blank" class="mt-3 inline-flex items-center gap-2 text-faso font-bold hover:underline text-sm">
+                    🗺️ Ouvrir dans Google Maps →
+                </a>
             </div>
         </div>
 

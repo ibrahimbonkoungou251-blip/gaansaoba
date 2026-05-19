@@ -300,22 +300,107 @@ def index():
     popular_hotels = Hotel.query.limit(3).all()
     return render_template('index.html', hotels=popular_hotels)
 
+@app.route('/promotions')
+def promotions():
+    # Show hotels with special deals (all hotels for now, ordered by price)
+    promo_hotels = Hotel.query.order_by(Hotel.price_base.asc()).all()
+    return render_template('promotions.html', hotels=promo_hotels)
+
 @app.route('/search')
 def search():
-    city = request.args.get('city', '')
+    city = sanitize(request.args.get('city', ''))
     h_type = request.args.get('type', '')
     budget = request.args.get('budget', type=float)
-    
+    stars = request.args.get('stars', type=int)
+    sort = request.args.get('sort', 'popular')  # popular, price_asc, price_desc, stars
+
     query = Hotel.query
     if city:
         query = query.filter(Hotel.city.ilike(f'%{city}%'))
-    if h_type:
+    if h_type and h_type in ['hotel', 'auberge', 'residence']:
         query = query.filter(Hotel.type == h_type)
     if budget:
         query = query.filter(Hotel.price_base <= budget)
-        
+    if stars:
+        query = query.filter(Hotel.stars == stars)
+
+    # Sorting
+    if sort == 'price_asc':
+        query = query.order_by(Hotel.price_base.asc())
+    elif sort == 'price_desc':
+        query = query.order_by(Hotel.price_base.desc())
+    elif sort == 'stars':
+        query = query.order_by(Hotel.stars.desc())
+
     results = query.all()
-    return render_template('search_results.html', hotels=results, city=city, h_type=h_type)
+    return render_template('search_results.html', hotels=results, city=city,
+                           h_type=h_type, sort=sort, budget=budget, stars=stars)
+
+@app.route('/admin/hotel/<int:hotel_id>/edit', methods=['GET', 'POST'])
+@login_required
+def admin_edit_hotel(hotel_id):
+    if current_user.role != 'admin':
+        flash('Accès refusé.', 'error')
+        return redirect(url_for('index'))
+    hotel = db.session.get(Hotel, hotel_id)
+    if not hotel:
+        abort(404)
+    if request.method == 'POST':
+        hotel.name = sanitize(request.form.get('name', hotel.name), 100)
+        hotel.type = request.form.get('type', hotel.type)
+        hotel.stars = request.form.get('stars', type=int, default=hotel.stars)
+        hotel.city = sanitize(request.form.get('city', hotel.city), 100)
+        hotel.address = sanitize(request.form.get('address', hotel.address), 200)
+        hotel.whatsapp = sanitize(request.form.get('whatsapp', hotel.whatsapp), 20)
+        hotel.phone = sanitize(request.form.get('phone', hotel.phone), 20)
+        hotel.email = sanitize(request.form.get('email', hotel.email), 100)
+        hotel.price_base = request.form.get('price_base', type=float, default=hotel.price_base)
+        hotel.image_url = request.form.get('image_url', hotel.image_url)
+        hotel.amenities = sanitize(request.form.get('amenities', hotel.amenities), 500)
+        hotel.description = sanitize(request.form.get('description', ''), 1000)
+        hotel.website = sanitize(request.form.get('website', ''), 200)
+        # Update room prices too
+        for room in hotel.rooms:
+            if room.type == 'Standard':
+                room.price = hotel.price_base
+        db.session.commit()
+        flash(f'✅ {hotel.name} mis à jour avec succès !', 'success')
+        return redirect(url_for('admin_dashboard'))
+    return render_template('admin/edit_hotel.html', hotel=hotel)
+
+@app.route('/admin/hotel/<int:hotel_id>/delete', methods=['POST'])
+@login_required
+def admin_delete_hotel(hotel_id):
+    if current_user.role != 'admin':
+        flash('Accès refusé.', 'error')
+        return redirect(url_for('index'))
+    hotel = db.session.get(Hotel, hotel_id)
+    if not hotel:
+        abort(404)
+    name = hotel.name
+    # Delete related rooms and bookings first
+    Room.query.filter_by(hotel_id=hotel_id).delete()
+    Booking.query.filter_by(hotel_id=hotel_id).delete()
+    db.session.delete(hotel)
+    db.session.commit()
+    flash(f'🗑️ {name} supprimé avec succès.', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/booking/<int:booking_id>/cancel', methods=['POST'])
+@login_required
+def admin_cancel_booking(booking_id):
+    if current_user.role != 'admin':
+        flash('Accès refusé.', 'error')
+        return redirect(url_for('index'))
+    booking = db.session.get(Booking, booking_id)
+    if not booking:
+        abort(404)
+    booking.status = 'cancelled'
+    db.session.commit()
+    flash('Réservation annulée et remboursement initié.', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+
 
 @app.route('/forgot-password')
 def forgot_password():

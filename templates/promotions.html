@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Promotions du moment - GAANSAOBA{% endblock %}
+
+{% block content %}
+<!-- Hero Promotions -->
+<section class="relative py-20 bg-gradient-to-br from-green-900 via-green-800 to-yellow-700 text-white overflow-hidden">
+    <div class="absolute inset-0 opacity-10" style="background-image:url('https://images.unsplash.com/photo-1551882547-ff40c63fe5fa');background-size:cover;background-position:center;"></div>
+    <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+        <p class="text-gold text-sm font-bold uppercase tracking-widest mb-4" data-fr="🔥 Offres limitées — Économisez jusqu'à 30%" data-en="🔥 Limited offers — Save up to 30%">🔥 Offres limitées — Économisez jusqu'à 30%</p>
+        <h1 class="text-4xl md:text-6xl font-bold font-serif mb-6" data-fr="Promotions du Moment" data-en="Current Deals">Promotions du Moment</h1>
+        <p class="text-xl text-gray-200" data-fr="Les meilleures offres hôtelières au Burkina Faso, disponibles pour une durée limitée." data-en="The best hotel deals in Burkina Faso, available for a limited time.">Les meilleures offres hôtelières au Burkina Faso, disponibles pour une durée limitée.</p>
+    </div>
+</section>
+
+<!-- Promotions Grid -->
+<section class="max-w-7xl mx-auto px-4 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {% for hotel in hotels %}
+        <div class="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 group border border-gray-100">
+            <!-- Badge promo -->
+            <div class="relative h-56 overflow-hidden">
+                <img src="{{ hotel.image_url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="{{ hotel.name }}">
+                <div class="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider animate-pulse">
+                    🔥 -{{ loop.index * 5 + 10 }}%
+                </div>
+                <div class="absolute bottom-4 right-4 bg-white text-gray-900 px-3 py-2 rounded-xl shadow-lg">
+                    <span class="text-xs text-gray-400 line-through block">{{ (hotel.price_base * 1.2)|int }} F</span>
+                    <span class="font-black text-faso text-lg">{{ hotel.price_base|int }} F</span>
+                    <span class="text-xs text-gray-400">/nuit</span>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="flex text-gold text-sm mb-2">
+                    {% for _ in range(hotel.stars or 0) %}⭐{% endfor %}
+                </div>
+                <h3 class="text-xl font-bold mb-1">{{ hotel.name }}</h3>
+                <p class="text-gray-500 text-sm mb-1">📍 {{ hotel.city }}</p>
+                {% if hotel.amenities %}
+                <div class="flex flex-wrap gap-1 my-3">
+                    {% for a in hotel.amenities.split(',')[:3] %}
+                    <span class="bg-green-50 text-faso text-xs px-2 py-1 rounded-full">✓ {{ a.strip() }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="flex gap-3 mt-4">
+                    <a href="{{ url_for('hotel_detail', hotel_id=hotel.id) }}" class="flex-1 bg-faso text-white py-3 rounded-xl font-bold text-center hover:bg-green-700 transition" data-fr="Réserver →" data-en="Book now →">Réserver →</a>
+                    <a href="https://wa.me/{{ hotel.whatsapp|replace(' ','')|replace('+','') }}" target="_blank" class="bg-green-500 text-white px-4 py-3 rounded-xl hover:bg-green-600 transition font-bold">💬</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-span-3 text-center py-20">
+            <div class="text-6xl mb-4">🏨</div>
+            <p class="text-gray-400 text-xl" data-fr="Aucune promotion disponible pour le moment. Revenez bientôt !" data-en="No promotions available right now. Check back soon!">Aucune promotion disponible pour le moment. Revenez bientôt !</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- CTA Newsletter -->
+<section class="bg-gradient-to-r from-green-900 to-green-700 py-16 text-white text-center">
+    <div class="max-w-2xl mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-4" data-fr="🔔 Ne ratez aucune offre !" data-en="🔔 Never miss a deal!">🔔 Ne ratez aucune offre !</h2>
+        <p class="text-gray-200 mb-8" data-fr="Contactez-nous sur WhatsApp pour recevoir les meilleures promotions en avant-première." data-en="Contact us on WhatsApp to receive the best deals first.">Contactez-nous sur WhatsApp pour recevoir les meilleures promotions en avant-première.</p>
+        <a href="{{ url_for('contact') }}" class="bg-gold text-gray-900 px-10 py-4 rounded-2xl font-black text-lg hover:bg-yellow-300 transition shadow-xl inline-block" data-fr="Nous contacter →" data-en="Contact us →">Nous contacter →</a>
+    </div>
+</section>
+{% endblock %}
