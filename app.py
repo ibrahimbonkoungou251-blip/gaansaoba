@@ -1,43 +1,85 @@
 import os
-import secrets
+import re
 import qrcode
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from urllib.parse import urlparse
 from models import db, User, Hotel, Room, Booking
-from datetime import datetime, timedelta
+from datetime import datetime
+from functools import wraps
+from collections import defaultdict
+import time
 
 app = Flask(__name__)
 
-# ====== SÉCURITÉ : Configuration ======
-# SECRET_KEY aléatoire si non définie dans les variables d'environnement
-_default_key = secrets.token_hex(32)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', _default_key)
+# ========== CONFIGURATION SECURISEE ==========
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(32).hex())
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///gaansaoba.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Sécurité des cookies de session
-app.config['SESSION_COOKIE_HTTPONLY'] = True       # Empêche JS d'accéder au cookie
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'      # Protège contre CSRF
-app.config['SESSION_COOKIE_SECURE'] = False         # True en HTTPS production
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=12)  # Session expire en 12h
+# Cookies sécurisés
+app.config['SESSION_COOKIE_HTTPONLY'] = True     # Empêche JS d'accéder aux cookies
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'   # Protection CSRF de base
+app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # Session expire en 1 heure
+
+# En production (HTTPS), activer le flag Secure sur les cookies
+if os.environ.get('DATABASE_URL'):  # On Render = production
+    app.config['SESSION_COOKIE_SECURE'] = True
 
 db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-login_manager.login_message = 'Veuillez vous connecter pour accéder à cette page.'
+login_manager.login_message = '🔒 Veuillez vous connecter pour accéder à cette page.'
+login_manager.login_message_category = 'error'
 
-# ====== SÉCURITÉ : Headers HTTP ======
+# ========== PROTECTION ANTI-BRUTEFORCE ==========
+_login_attempts = defaultdict(list)
+MAX_ATTEMPTS = 5
+LOCKOUT_SECONDS = 300  # 5 minutes
+
+def is_rate_limited(ip):
+    now = time.time()
+    attempts = _login_attempts[ip]
+    # Nettoyer les anciennes tentatives
+    _login_attempts[ip] = [t for t in attempts if now - t < LOCKOUT_SECONDS]
+    return len(_login_attempts[ip]) >= MAX_ATTEMPTS
+
+def record_attempt(ip):
+    _login_attempts[ip].append(time.time())
+
+def clear_attempts(ip):
+    _login_attempts[ip] = []
+
+# ========== EN-TÊTES DE SÉCURITÉ HTTP ==========
 @app.after_request
 def add_security_headers(response):
-    response.headers['X-Frame-Options'] = 'SAMEORIGIN'              # Anti-clickjacking
-    response.headers['X-Content-Type-Options'] = 'nosniff'           # Anti-MIME sniffing
-    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    response.headers['Permissions-Policy'] = 'geolocation=(), microphone=()'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
     return response
+
+# ========== SANITISATION DES INPUTS ==========
+def sanitize(text, max_len=200):
+    """Nettoie et limite les entrées utilisateur."""
+    if not text:
+        return ''
+    # Supprimer les balises HTML dangereuses
+    text = re.sub(r'<[^>]+>', '', str(text))
+    # Supprimer les caractères de contrôle
+    text = re.sub(r'[\x00-\x08\x0b-\x0c\x0e-\x1f]', '', text)
+    return text.strip()[:max_len]
+
+def is_valid_phone(phone):
+    """Valide un numéro de téléphone burkinabè."""
+    clean = re.sub(r'[\s\-\+]', '', phone)
+    return re.match(r'^(226)?[0-9]{8}$', clean) is not None
+
+def is_valid_email(email):
+    """Valide une adresse email."""
+    return re.match(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$', email) is not None
 
 
 
@@ -123,71 +165,61 @@ with app.app_context():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
     if request.method == 'POST':
-        username = request.form.get('username', '').strip()
+        ip = request.remote_addr
+        
+        # 🔒 Protection anti-bruteforce
+        if is_rate_limited(ip):
+            flash('⚠️ Trop de tentatives. Veuillez attendre 5 minutes avant de réessayer.', 'error')
+            return render_template('login.html')
+        
+        username = sanitize(request.form.get('username', ''), max_len=50)
         password = request.form.get('password', '')
         
-        # Validation des entrées
         if not username or not password:
             flash('Veuillez remplir tous les champs.', 'error')
             return render_template('login.html')
         
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
+            clear_attempts(ip)  # Réinitialiser les tentatives après succès
             login_user(user, remember=False)
-            flash(f'Bienvenue {user.username} ! 🎉', 'success')
-            
-            # ====== SÉCURITÉ : Validation Open Redirect ======
+            flash(f'Bienvenue {user.username} ! 🌟', 'success')
+            # 🔒 Validation de la redirection next (prévention open redirect)
             next_page = request.args.get('next')
-            if next_page:
-                parsed = urlparse(next_page)
-                # Rejeter toute URL avec domaine externe
-                if parsed.netloc and parsed.netloc != request.host:
-                    next_page = None
-            
+            if next_page and not next_page.startswith('/'):
+                next_page = None
             if user.role == 'admin':
                 return redirect(next_page or url_for('admin_dashboard'))
             elif user.role == 'hotelier':
                 return redirect(next_page or url_for('hotelier_dashboard'))
             return redirect(next_page or url_for('index'))
-        flash('Nom d\'utilisateur ou mot de passe incorrect.', 'error')
+        
+        record_attempt(ip)  # Enregistrer la tentative échouée
+        remaining = MAX_ATTEMPTS - len(_login_attempts[ip])
+        flash(f'Identifiants incorrects. {remaining} tentative(s) restante(s) avant blocage.', 'error')
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
     if request.method == 'POST':
-        username = request.form.get('username', '').strip()
+        username = sanitize(request.form.get('username', ''), max_len=50)
         password = request.form.get('password', '')
-        email = request.form.get('email', '').strip()
+        role = request.form.get('role', 'client')
         
-        # ====== SÉCURITÉ : Validation des entrées ======
+        # Validation des entrées
         if not username or len(username) < 3:
-            flash('Le nom d\'utilisateur doit avoir au moins 3 caractères.', 'error')
-            return render_template('register.html')
-        
-        if len(username) > 50:
-            flash('Le nom d\'utilisateur est trop long (max 50 caractères).', 'error')
-            return render_template('register.html')
-            
-        if len(password) < 8:
-            flash('Le mot de passe doit avoir au moins 8 caractères. 🔒', 'error')
-            return render_template('register.html')
-        
-        # ====== SÉCURITÉ : Empêcher inscription admin/hotelier via formulaire public ======
-        # Les rôles admin et hotelier ne peuvent être assignés que par l'administrateur
-        role = 'client'  # Toujours client pour le registre public
+            flash('Le nom d\'utilisateur doit contenir au moins 3 caractères.', 'error')
+            return redirect(url_for('register'))
+        if len(password) < 6:
+            flash('Le mot de passe doit contenir au moins 6 caractères.', 'error')
+            return redirect(url_for('register'))
+        if role not in ['client', 'hotelier']:  # Empêche de se déclarer admin
+            role = 'client'
         
         if User.query.filter_by(username=username).first():
             flash('Ce nom d\'utilisateur est déjà pris.', 'error')
-            return render_template('register.html')
-        
-        if email and User.query.filter_by(email=email).first():
-            flash('Cet email est déjà utilisé.', 'error')
-            return render_template('register.html')
+            return redirect(url_for('register'))
             
         user = User(username=username, role=role)
         user.set_password(password)
