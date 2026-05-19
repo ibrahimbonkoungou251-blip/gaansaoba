@@ -21,8 +21,8 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(user_id):
     try:
-        return User.query.get(int(user_id))
-    except ValueError:
+        return db.session.get(User, int(user_id))
+    except (ValueError, Exception):
         return None
 
 # Initialize Database and Seed Data
@@ -151,7 +151,10 @@ def hotelier_dashboard():
     if not current_user.hotel_id:
         flash("Vous n'avez pas encore d'hôtel assigné.", 'error')
         return redirect(url_for('index'))
-    hotel = Hotel.query.get_or_404(current_user.hotel_id)
+    hotel = db.session.get(Hotel, current_user.hotel_id)
+    if not hotel:
+        flash('Hôtel introuvable.', 'error')
+        return redirect(url_for('index'))
     bookings = Booking.query.filter_by(hotel_id=hotel.id).order_by(Booking.created_at.desc()).all()
     rooms = Room.query.filter_by(hotel_id=hotel.id).all()
     return render_template('hotelier_dashboard.html', hotel=hotel, bookings=bookings, rooms=rooms)
@@ -179,7 +182,10 @@ def hotelier_toggle_room(room_id):
         flash('Accès refusé.', 'error')
         return redirect(url_for('index'))
         
-    room = Room.query.get_or_404(room_id)
+    room = db.session.get(Room, room_id)
+    if not room:
+        flash('Chambre introuvable.', 'error')
+        return redirect(url_for('hotelier_dashboard'))
     if room.hotel_id != current_user.hotel_id:
         flash('Accès refusé.', 'error')
         return redirect(url_for('hotelier_dashboard'))
@@ -249,13 +255,19 @@ def wip_feature():
 
 @app.route('/hotel/<int:hotel_id>')
 def hotel_detail(hotel_id):
-    hotel = Hotel.query.get_or_404(hotel_id)
+    hotel = db.session.get(Hotel, hotel_id)
+    if not hotel:
+        from flask import abort
+        abort(404)
     return render_template('hotel_detail.html', hotel=hotel)
 
 @app.route('/book', methods=['POST'])
 def book():
     room_id = request.form.get('room_type')
-    room = Room.query.get_or_404(room_id)
+    room = db.session.get(Room, int(room_id)) if room_id else None
+    if not room:
+        flash('Chambre introuvable.', 'error')
+        return redirect(url_for('index'))
     guest_name = request.form.get('name')
     guest_phone = request.form.get('phone')
     check_in = datetime.strptime(request.form.get('check_in'), '%Y-%m-%d')
@@ -276,7 +288,9 @@ def book():
 
 @app.route('/payment/<int:booking_id>', methods=['GET', 'POST'])
 def payment(booking_id):
-    booking = Booking.query.get_or_404(booking_id)
+    booking = db.session.get(Booking, booking_id)
+    if not booking:
+        from flask import abort; abort(404)
     advance = booking.total_price * 0.25 # 25% advance
     
     if request.method == 'POST':
@@ -301,7 +315,9 @@ def payment(booking_id):
 
 @app.route('/confirmation/<int:booking_id>')
 def confirmation(booking_id):
-    booking = Booking.query.get_or_404(booking_id)
+    booking = db.session.get(Booking, booking_id)
+    if not booking:
+        from flask import abort; abort(404)
     return render_template('confirmation.html', booking=booking)
 
 @app.route('/admin')
@@ -364,7 +380,9 @@ def admin_confirm_booking(booking_id):
     if current_user.role != 'admin':
         flash('Accès refusé.', 'error')
         return redirect(url_for('index'))
-    booking = Booking.query.get_or_404(booking_id)
+    booking = db.session.get(Booking, booking_id)
+    if not booking:
+        from flask import abort; abort(404)
     booking.status = 'confirmed'
     db.session.commit()
     flash('Réservation confirmée avec succès.', 'success')
@@ -376,7 +394,9 @@ def hotelier_confirm_booking(booking_id):
     if current_user.role != 'hotelier':
         flash('Accès refusé.', 'error')
         return redirect(url_for('index'))
-    booking = Booking.query.get_or_404(booking_id)
+    booking = db.session.get(Booking, booking_id)
+    if not booking:
+        from flask import abort; abort(404)
     if booking.hotel_id != current_user.hotel_id:
         flash('Accès refusé. Cette réservation ne concerne pas votre établissement.', 'error')
         return redirect(url_for('hotelier_dashboard'))
