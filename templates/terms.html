@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Conditions Générales d'Utilisation - GAANSAOBA{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-16">
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold font-serif mb-4">Conditions Générales d'Utilisation</h1>
+        <p class="text-gray-500">Dernière mise à jour : Mai 2026 • GAANSAOBA 🇧🇫</p>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-10 space-y-10">
+
+        <section>
+            <h2 class="text-2xl font-bold text-faso mb-4">1. Présentation de la plateforme</h2>
+            <p class="text-gray-600 leading-relaxed">GAANSAOBA est une plateforme numérique de réservation d'hébergement au Burkina Faso. Elle met en relation les voyageurs avec les hôtels, auberges et résidences meublées. Le slogan de GAANSAOBA est : <strong>"Votre séjour au Burkina en un clic."</strong></p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold text-faso mb-4">2. Acceptation des conditions</h2>
+            <p class="text-gray-600 leading-relaxed">En accédant à la plateforme GAANSAOBA, vous acceptez sans réserve les présentes Conditions Générales d'Utilisation. Si vous n'acceptez pas ces conditions, vous ne devez pas utiliser la plateforme.</p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold text-faso mb-4">3. Services proposés</h2>
+            <ul class="list-none space-y-3 text-gray-600">
+                <li class="flex gap-3"><span class="text-faso font-bold">✓</span> Recherche et comparaison d'hébergements</li>
+                <li class="flex gap-3"><span class="text-faso font-bold">✓</span> Réservation en ligne avec confirmation par QR Code</li>
+                <li class="flex gap-3"><span class="text-faso font-bold">✓</span> Paiement d'avance via Mobile Money (Orange, Moov, Telecel)</li>
+                <li class="flex gap-3"><span class="text-faso font-bold">✓</span> Tableau de bord pour les hôteliers</li>
+                <li class="flex gap-3"><span class="text-faso font-bold">✓</span> Application mobile installable (PWA)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold text-faso mb-4">4. Responsabilités des utilisateurs</h2>
+            <p class="text-gray-600 leading-relaxed mb-3">L'utilisateur s'engage à :</p>
+            <ul class="list-none space-y-2 text-gray-600">
+                <li class="flex gap-3"><span class="text-red-500">•</span> Fournir des informations exactes lors de l'inscription et de la réservation</li>
+                <li class="flex gap-3"><span class="text-red-500">•</span> Ne pas utiliser la plateforme à des fins frauduleuses</li>
+                <li class="flex gap-3"><span class="text-red-500">•</span> Respecter les politiques des établissements hôteliers</li>
+                <li class="flex gap-3"><span class="text-red-500">•</span> Ne pas partager ses identifiants de connexion</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold text-faso mb-4">5. Paiements et remboursements</h2>
+            <p class="text-gray-600 leading-relaxed">L'avance payée représente 25% du montant total du séjour. Cette avance est remboursable en cas d'annulation effectuée au moins 48h avant la date d'arrivée. En cas d'annulation tardive, l'avance peut être retenue selon la politique de l'établissement.</p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold text-faso mb-4">6. Propriété intellectuelle</h2>
+            <p class="text-gray-600 leading-relaxed">Le nom GAANSAOBA, le logo, le design et tous les contenus de la plateforme sont la propriété exclusive de leurs créateurs. Toute reproduction sans autorisation est interdite.</p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold text-faso mb-4">7. Contact</h2>
+            <p class="text-gray-600 leading-relaxed">Pour toute question relative aux présentes CGU, contactez-nous via la <a href="{{ url_for('contact') }}" class="text-faso font-bold hover:underline">page Contact</a>.</p>
+        </section>
+    </div>
+
+    <div class="text-center mt-8">
+        <a href="{{ url_for('index') }}" class="bg-faso text-white px-8 py-3 rounded-xl font-bold hover:bg-green-700 transition inline-block">← Retour à l'accueil</a>
+    </div>
+</div>
+{% endblock %}

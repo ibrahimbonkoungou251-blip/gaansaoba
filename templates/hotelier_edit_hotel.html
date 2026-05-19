@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier l'Établissement - GAANSAOBA{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="flex items-center gap-4 mb-10">
+        <a href="{{ url_for('hotelier_dashboard') }}" class="text-gray-400 hover:text-faso transition">← Mon Espace</a>
+        <span class="text-gray-300">/</span>
+        <h1 class="text-2xl font-bold" data-fr="Modifier l'établissement" data-en="Edit Property">Modifier l'établissement</h1>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
+        <form method="POST">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Nom de l'établissement *" data-en="Property Name *">Nom de l'établissement *</label>
+                    <input type="text" name="name" value="{{ hotel.name }}" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Type d'hébergement" data-en="Accommodation Type">Type d'hébergement</label>
+                    <select name="type" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                        <option value="hotel" {% if hotel.type=='hotel' %}selected{% endif %}>🏨 Hôtel</option>
+                        <option value="auberge" {% if hotel.type=='auberge' %}selected{% endif %}>🛏 Auberge</option>
+                        <option value="residence" {% if hotel.type=='residence' %}selected{% endif %}>🏠 Résidence</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Nombre d'étoiles (0-5)" data-en="Stars (0-5)">Nombre d'étoiles (0-5)</label>
+                    <input type="number" name="stars" min="0" max="5" value="{{ hotel.stars or 0 }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Ville" data-en="City">Ville</label>
+                    <select name="city" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                        {% for c in ['Ouagadougou','Bobo-Dioulasso','Koudougou','Banfora','Fada N\'Gourma','Dédougou','Kaya'] %}
+                        <option value="{{ c }}" {% if hotel.city==c %}selected{% endif %}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Adresse" data-en="Address">Adresse</label>
+                    <input type="text" name="address" value="{{ hotel.address }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="💰 Prix de base (FCFA/nuit) *" data-en="💰 Base Price (FCFA/night) *">💰 Prix de base (FCFA/nuit) *</label>
+                    <input type="number" name="price_base" value="{{ hotel.price_base|int }}" required min="0" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition font-bold text-faso">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Numéro WhatsApp" data-en="WhatsApp Number">Numéro WhatsApp</label>
+                    <input type="text" name="whatsapp" value="{{ hotel.whatsapp }}" placeholder="+22670000000" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Téléphone de contact" data-en="Contact Phone">Téléphone de contact</label>
+                    <input type="text" name="phone" value="{{ hotel.phone }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Email" data-en="Email">Email</label>
+                    <input type="email" name="email" value="{{ hotel.email }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Site web officiel" data-en="Official Website">Site web officiel</label>
+                    <input type="url" name="website" value="{{ hotel.website or '' }}" placeholder="https://..." class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="URL de l'image principale" data-en="Main Image URL">URL de l'image principale</label>
+                    <input type="url" name="image_url" value="{{ hotel.image_url }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Services inclus (séparés par des virgules)" data-en="Amenities (comma separated)">Services inclus (séparés par des virgules)</label>
+                    <input type="text" name="amenities" value="{{ hotel.amenities }}" placeholder="WiFi,Piscine,Climatisation,Restaurant,Parking" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-gray-700 mb-2" data-fr="Description de l'établissement" data-en="Property Description">Description de l'établissement</label>
+                    <textarea name="description" rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none resize-none">{{ hotel.description or '' }}</textarea>
+                </div>
+            </div>
+            <div class="flex gap-4 mt-8">
+                <button type="submit" class="flex-1 bg-faso text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition shadow-lg" data-fr="💾 Enregistrer les modifications" data-en="💾 Save Changes">💾 Enregistrer les modifications</button>
+                <a href="{{ url_for('hotelier_dashboard') }}" class="px-8 py-4 rounded-xl border border-gray-200 font-bold text-gray-600 hover:bg-gray-50 transition" data-fr="Annuler" data-en="Cancel">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

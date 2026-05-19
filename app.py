@@ -289,6 +289,40 @@ def hotelier_toggle_room(room_id):
     flash('Statut de la chambre mis à jour.', 'success')
     return redirect(url_for('hotelier_dashboard'))
 
+@app.route('/hotelier/edit', methods=['GET', 'POST'])
+@login_required
+def hotelier_edit_hotel():
+    if current_user.role != 'hotelier' or not current_user.hotel_id:
+        flash('Accès refusé.', 'error')
+        return redirect(url_for('index'))
+    hotel = db.session.get(Hotel, current_user.hotel_id)
+    if not hotel:
+        abort(404)
+        
+    if request.method == 'POST':
+        hotel.name = sanitize(request.form.get('name', hotel.name), 100)
+        hotel.type = request.form.get('type', hotel.type)
+        hotel.stars = request.form.get('stars', type=int, default=hotel.stars)
+        hotel.city = sanitize(request.form.get('city', hotel.city), 100)
+        hotel.address = sanitize(request.form.get('address', hotel.address), 200)
+        hotel.whatsapp = sanitize(request.form.get('whatsapp', hotel.whatsapp), 20)
+        hotel.phone = sanitize(request.form.get('phone', hotel.phone), 20)
+        hotel.email = sanitize(request.form.get('email', hotel.email), 100)
+        hotel.price_base = request.form.get('price_base', type=float, default=hotel.price_base)
+        hotel.image_url = request.form.get('image_url', hotel.image_url)
+        hotel.amenities = sanitize(request.form.get('amenities', hotel.amenities), 500)
+        hotel.description = sanitize(request.form.get('description', ''), 1000)
+        hotel.website = sanitize(request.form.get('website', ''), 200)
+        # Update room prices too
+        for room in hotel.rooms:
+            if room.type == 'Standard':
+                room.price = hotel.price_base
+        db.session.commit()
+        flash(f'✅ Établissement mis à jour avec succès !', 'success')
+        return redirect(url_for('hotelier_dashboard'))
+        
+    return render_template('hotelier_edit_hotel.html', hotel=hotel)
+
 @app.route('/my-bookings')
 @login_required
 def client_dashboard():
@@ -409,13 +443,11 @@ def forgot_password():
 
 @app.route('/terms')
 def terms():
-    flash('Nos conditions générales d\'utilisation seront publiées prochainement sur gaansaoba.bf', 'success')
-    return redirect(url_for('index'))
+    return render_template('terms.html')
 
 @app.route('/privacy')
 def privacy():
-    flash('Notre politique de confidentialité sera bientôt disponible en ligne.', 'success')
-    return redirect(url_for('index'))
+    return render_template('privacy.html')
 
 # ========== PLAY STORE TWA — Digital Asset Links ==========
 @app.route('/.well-known/assetlinks.json')

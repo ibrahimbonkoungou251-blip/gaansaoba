@@ -1,64 +1,160 @@
 {% extends "base.html" %}
 
+{% block title %}Résultats de recherche - GAANSAOBA{% endblock %}
+
 {% block content %}
 <section class="max-w-7xl mx-auto px-4 py-12">
-    <div class="mb-12">
-        <h1 class="text-3xl font-bold font-serif">Résultats pour "{{ city or 'Tout le Burkina' }}"</h1>
-        <p class="text-gray-500">{{ hotels | length }} établissements trouvés.</p>
+    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold font-serif text-gray-900" data-fr="Résultats de recherche" data-en="Search Results">
+                {% if city %}
+                    Résultats pour "{{ city }}"
+                {% else %}
+                    Tous les établissements au Burkina
+                {% endif %}
+            </h1>
+            <p class="text-gray-500 mt-1">
+                <span class="font-bold text-faso">{{ hotels | length }}</span> 
+                établissement(s) trouvé(s).
+            </p>
+        </div>
+        
+        <!-- Quick Sort Dropdown -->
+        <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 self-start md:self-auto">
+            <span class="text-xs font-bold text-gray-400 uppercase" data-fr="Trier par" data-en="Sort by">Trier par :</span>
+            <select id="sort-select" onchange="applyFilters()" class="border-none bg-transparent font-bold text-sm text-gray-700 focus:ring-0 cursor-pointer">
+                <option value="popular" {% if sort == 'popular' %}selected{% endif %} data-fr="Popularité" data-en="Popularity">Popularité</option>
+                <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %} data-fr="Prix : Bas à Élevé" data-en="Price: Low to High">Prix : Bas à Élevé</option>
+                <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %} data-fr="Prix : Élevé à Bas" data-en="Price: High to Low">Prix : Élevé à Bas</option>
+                <option value="stars" {% if sort == 'stars' %}selected{% endif %} data-fr="Classement Étoiles" data-en="Star Rating">Classement Étoiles</option>
+            </select>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <!-- Filters Sidebar -->
         <div class="md:col-span-1">
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 sticky top-24">
-                <h3 class="font-bold mb-6">Filtrer par</h3>
-                
-                <div class="mb-6">
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Catégorie</label>
+            <form id="filter-form" action="{{ url_for('search') }}" method="GET" class="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 sticky top-24 space-y-6">
+                <!-- Keep existing query parameters as hidden fields -->
+                <input type="hidden" name="city" value="{{ city }}">
+                <input type="hidden" name="sort" id="hidden-sort" value="{{ sort }}">
+
+                <h3 class="font-bold text-lg text-gray-800 flex items-center gap-2 pb-3 border-b border-gray-100">
+                    <span>🎛️</span> <span data-fr="Filtrer la recherche" data-en="Filter search">Filtrer la recherche</span>
+                </h3>
+
+                <!-- Type d'hébergement -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-3" data-fr="Type d'hébergement" data-en="Accommodation Type">Type d'hébergement</label>
                     <div class="space-y-2">
-                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> 5 Étoiles</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> 4 Étoiles</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> Auberges</label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="radio" name="type" value="" {% if not h_type %}checked{% endif %} onchange="applyFilters()" class="text-faso focus:ring-faso rounded-full">
+                            <span class="text-sm font-medium text-gray-600 group-hover:text-faso transition" data-fr="Tous" data-en="All">Tous</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="radio" name="type" value="hotel" {% if h_type == 'hotel' %}checked{% endif %} onchange="applyFilters()" class="text-faso focus:ring-faso rounded-full">
+                            <span class="text-sm font-medium text-gray-600 group-hover:text-faso transition" data-fr="🏨 Hôtels" data-en="🏨 Hotels">🏨 Hôtels</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="radio" name="type" value="auberge" {% if h_type == 'auberge' %}checked{% endif %} onchange="applyFilters()" class="text-faso focus:ring-faso rounded-full">
+                            <span class="text-sm font-medium text-gray-600 group-hover:text-faso transition" data-fr="🛏 Auberges" data-en="🛏 Guesthouses">🛏 Auberges</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="radio" name="type" value="residence" {% if h_type == 'residence' %}checked{% endif %} onchange="applyFilters()" class="text-faso focus:ring-faso rounded-full">
+                            <span class="text-sm font-medium text-gray-600 group-hover:text-faso transition" data-fr="🏠 Résidences" data-en="🏠 Residences">🏠 Résidences</span>
+                        </label>
                     </div>
                 </div>
 
+                <!-- Classement Étoiles -->
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Services</label>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-3" data-fr="Étoiles" data-en="Stars">Étoiles</label>
                     <div class="space-y-2">
-                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> Piscine</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> WiFi</label>
-                        <label class="flex items-center gap-2"><input type="checkbox" class="text-faso rounded"> Parking</label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="radio" name="stars" value="" {% if not stars %}checked{% endif %} onchange="applyFilters()" class="text-faso focus:ring-faso rounded-full">
+                            <span class="text-sm font-medium text-gray-600 group-hover:text-faso transition" data-fr="Toutes" data-en="Any">Toutes</span>
+                        </label>
+                        {% for num in [5, 4, 3, 2, 1] %}
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="radio" name="stars" value="{{ num }}" {% if stars == num %}checked{% endif %} onchange="applyFilters()" class="text-faso focus:ring-faso rounded-full">
+                            <span class="text-sm font-medium text-gold">
+                                {% for _ in range(num) %}⭐{% endfor %}
+                            </span>
+                        </label>
+                        {% endfor %}
                     </div>
                 </div>
-            </div>
+
+                <!-- Budget Max -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-3" data-fr="Budget maximum" data-en="Maximum Budget">Budget maximum (FCFA)</label>
+                    <input type="number" name="budget" placeholder="Ex: 50000" value="{% if budget %}{{ budget|int }}{% endif %}" onchange="applyFilters()" class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-faso focus:ring-0 transition text-sm font-bold text-gray-700 outline-none">
+                </div>
+
+                <!-- Reset Filters Link -->
+                <a href="{{ url_for('search', city=city) }}" class="block text-center text-xs font-bold text-red-500 hover:text-red-700 transition" data-fr="Réinitialiser les filtres" data-en="Reset filters">
+                    🔄 Réinitialiser les filtres
+                </a>
+            </form>
         </div>
 
         <!-- Results Grid -->
-        <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8">
-            {% for hotel in hotels %}
-            <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition group">
-                <div class="h-48 overflow-hidden relative">
-                    <img src="{{ hotel.image_url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                    {% if loop.first %}
-                    <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider animate-pulse">
-                        🔥 Offre Spéciale
+        <div class="md:col-span-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {% for hotel in hotels %}
+                <div class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 group border border-gray-100 flex flex-col h-full">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="{{ hotel.image_url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="{{ hotel.name }}">
+                        {% if hotel.stars and hotel.stars >= 4 %}
+                        <div class="absolute top-4 left-4 bg-gold text-dark px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider animate-pulse shadow-md">
+                            ⭐ Premium
+                        </div>
+                        {% endif %}
+                        <div class="absolute bottom-4 right-4 bg-white px-3 py-2 rounded-xl text-sm font-black shadow-lg">
+                            <span class="text-faso font-black text-lg">{{ hotel.price_base | int }} F</span>
+                            <span class="text-[10px] text-gray-400 block font-normal text-right">/ nuit</span>
+                        </div>
                     </div>
-                    {% endif %}
-                    <div class="absolute bottom-4 right-4 bg-white px-3 py-1 rounded-lg text-sm font-bold shadow">
-                        {{ hotel.price_base | int }} F / nuit
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex text-gold text-sm mb-2">
+                            {% for _ in range(hotel.stars or 0) %}⭐{% endfor %}
+                        </div>
+                        <h3 class="text-xl font-bold mb-1 text-gray-900 group-hover:text-faso transition">{{ hotel.name }}</h3>
+                        <p class="text-gray-400 text-xs mb-4 flex items-center gap-1">📍 {{ hotel.city }}, {{ hotel.address }}</p>
+                        
+                        {% if hotel.amenities %}
+                        <div class="flex flex-wrap gap-1 mb-6 mt-auto">
+                            {% for amenity in hotel.amenities.split(',')[:3] %}
+                            <span class="bg-green-50 text-faso text-xs px-2.5 py-1 rounded-full font-semibold">✓ {{ amenity.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="flex gap-2">
+                            <a href="{{ url_for('hotel_detail', hotel_id=hotel.id) }}" class="flex-grow text-center bg-faso text-white py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-md" data-fr="Voir les chambres" data-en="View rooms">Voir les chambres</a>
+                            <a href="https://wa.me/{{ hotel.whatsapp|replace(' ','')|replace('+','') }}" target="_blank" class="bg-green-500 text-white px-4 py-3 rounded-xl hover:bg-green-600 transition font-bold flex items-center justify-center shadow-md" title="Contacter sur WhatsApp">
+                                💬
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <div class="p-6">
-                    <h3 class="text-lg font-bold mb-1">{{ hotel.name }}</h3>
-                    <p class="text-gray-400 text-xs mb-4">📍 {{ hotel.city }}, {{ hotel.address }}</p>
-                    <div class="flex text-gold text-xs mb-4">
-                        {% for _ in range(hotel.stars) %}⭐{% endfor %}
-                    </div>
-                    <a href="{{ url_for('hotel_detail', hotel_id=hotel.id) }}" class="block text-center bg-faso text-white py-2 rounded-lg font-bold hover:bg-green-700 transition">Voir les chambres</a>
+                {% else %}
+                <div class="col-span-2 text-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm">
+                    <div class="text-6xl mb-4">🏨</div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-2" data-fr="Aucun résultat trouvé" data-en="No results found">Aucun établissement ne correspond</h3>
+                    <p class="text-gray-400 max-w-sm mx-auto text-sm" data-fr="Essayez de modifier vos filtres ou élargissez votre recherche de budget." data-en="Try changing your filters or expand your budget range.">Essayez de modifier vos filtres ou d'augmenter votre budget maximum.</p>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
 </section>
+
+<script>
+function applyFilters() {
+    const sortVal = document.getElementById('sort-select').value;
+    document.getElementById('hidden-sort').value = sortVal;
+    document.getElementById('filter-form').submit();
+}
+</script>
 {% endblock %}
