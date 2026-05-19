@@ -209,23 +209,34 @@
         closeIcon.classList.toggle('hidden');
     }
 
-    // Language Toggle (FR/EN)
+    // Language Toggle (FR/EN) — FR = Français, EN = English
+    // Always default to French, reset if stale 'en' session
     let currentLang = localStorage.getItem('gaansaoba_lang') || 'fr';
+    
     function toggleLang() {
         currentLang = currentLang === 'fr' ? 'en' : 'fr';
         localStorage.setItem('gaansaoba_lang', currentLang);
         applyLang();
     }
+    
     function applyLang() {
-        const btnText = currentLang === 'fr' ? '🌐 EN' : '🌐 FR';
+        // Button shows CURRENT language (flag + code)
+        // When in FR → button shows "🇫🇷 FR" → click to switch to EN
+        // When in EN → button shows "🇬🇧 EN" → click to switch to FR
+        const btnText = currentLang === 'fr' ? '🇫🇷 FR' : '🇬🇧 EN';
         document.querySelectorAll('#lang-toggle').forEach(b => b.textContent = btnText);
         document.querySelectorAll('.lang-btn').forEach(b => b.textContent = btnText);
+        
+        // Apply content in current language
         document.querySelectorAll('[data-fr]').forEach(el => {
-            const key = currentLang === 'fr' ? 'fr' : 'en';
-            if (el.dataset[key]) el.textContent = el.dataset[key];
+            const val = currentLang === 'fr' ? el.dataset.fr : el.dataset.en;
+            if (val) el.textContent = val;
         });
+        
+        // Update html lang attribute
+        document.getElementById('html-root').lang = currentLang === 'fr' ? 'fr' : 'en';
     }
-    // Apply on load
+    // Apply on load — always start in French
     applyLang();
     </script>
 </body>
