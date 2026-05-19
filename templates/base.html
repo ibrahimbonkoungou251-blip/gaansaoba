@@ -2,8 +2,15 @@
 <html lang="fr" id="html-root">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <meta name="description" content="GAANSAOBA - La plus grande plateforme de réservation d'hébergement au Burkina Faso. Hôtels, auberges, résidences.">
+    <meta name="theme-color" content="#009E49">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GAANSAOBA">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
     <title>{% block title %}GAANSAOBA - Votre séjour au Burkina en un clic{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
@@ -166,6 +173,32 @@
     </footer>
 
     <script>
+    // Register Service Worker (PWA - installable on Android/iPhone)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/sw.js')
+          .then(() => console.log('GAANSAOBA PWA ready ✅'))
+          .catch(() => {});
+    }
+    
+    // Prompt to install on mobile
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const banner = document.getElementById('install-banner');
+        if (banner) banner.classList.remove('hidden');
+    });
+    function installApp() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => {
+                deferredPrompt = null;
+                const banner = document.getElementById('install-banner');
+                if (banner) banner.classList.add('hidden');
+            });
+        }
+    }
+    
     // Mobile Menu Toggle
     function toggleMobileMenu() {
         const menu = document.getElementById('mobile-menu');
